@@ -1,336 +1,402 @@
-# @devgrid/common
+# @onix-js/core
 
-A comprehensive utility library providing essential JavaScript/TypeScript functions for everyday development tasks. This package contains type-safe implementations of common utilities with zero external dependencies.
+The core orchestration engine for the Onix infrastructure management system. This package contains all the business logic for infrastructure automation, including playbook execution, inventory management, SSH client operations, and task system.
 
-## Installation
+## 🏗️ Architecture
+
+The core package is organized into several key modules:
+
+### Core Components
+
+- **Onix** - Main orchestration class that ties everything together
+- **Playbook** - Task execution workflows
+- **Inventory** - Host and group management
+- **Task System** - Pluggable task execution framework
+
+### Execution Engine
+
+- **Executor** - Task execution engine with parallel processing
+- **SSHClient** - Secure remote execution client
+- **Command** - Command execution abstraction
+
+### Infrastructure Management
+
+- **Infrastructure** - Infrastructure context and configuration
+- **InfrastructureLoader** - Loading infrastructure definitions
+- **TemplateEngine** - Variable substitution and templating
+
+### Logging & Monitoring
+
+- **LoggerFactory** - Logger creation and configuration
+- **StructuredLogger** - Structured logging implementation
+- **Metrics** - Prometheus metrics collection
+
+## 📦 Installation
 
 ```bash
-npm install @devgrid/common
-# or
-yarn add @devgrid/common
-# or
-pnpm add @devgrid/common
+npm install @onix-js/core
 ```
 
-## Features
-
-- 🎯 Type-safe implementations with full TypeScript support
-- 📦 Zero external dependencies
-- 🌳 Tree-shakeable exports
-- ✅ Comprehensive test coverage
-- 🚀 Optimized for performance
-
-## API Reference
-
-### 🔧 Primitives
-
-Basic utility functions for common operations.
+## 🚀 Quick Start
 
 ```typescript
-import { noop, identity, truly, falsely, arrify } from '@devgrid/common';
+import { Onix, Playbook, Task, Inventory } from '@onix-js/core';
 
-// noop - A function that does nothing (useful for default callbacks)
-button.onClick = noop; // No operation
+// Initialize Onix
+const onix = new Onix({
+  logLevel: 'info',
+  logFormat: 'json',
+  dryRun: false
+});
 
-// identity - Returns the input value unchanged
-identity(5); // => 5
-identity({ foo: 'bar' }); // => { foo: 'bar' }
+// Create inventory
+const inventory = onix.inventory;
+inventory.addHost({
+  hostname: 'server1',
+  ip: '192.168.1.10',
+  username: 'admin',
+  port: 22
+});
 
-// truly - Always returns true (useful for filters)
-[1, 2, 3].filter(truly); // => [1, 2, 3]
+// Create a playbook
+const playbook = new Playbook([
+  new ShellTask({
+    name: 'update-system',
+    command: 'apt update && apt upgrade -y'
+  })
+]);
 
-// falsely - Always returns false
-if (falsely()) { /* never executes */ }
+// Register playbook
+onix.registerPlaybook('system-update', playbook);
 
-// arrify - Converts any value to an array
-arrify(null); // => []
-arrify(undefined); // => []
-arrify(1); // => [1]
-arrify([1, 2, 3]); // => [1, 2, 3] (returns same array)
+// Execute playbook
+const runner = new PlaybookRunner(onix.context);
+const results = await runner.run(playbook, inventory.listHosts());
 ```
 
-### 🔍 Type Predicates
+## 🔧 Core Classes
 
-Comprehensive type checking and validation functions.
+### Onix
+
+Main orchestration class that provides the entry point for all operations.
 
 ```typescript
-import { 
-  isString, isNumber, isBoolean, isSymbol, isBigInt,
-  isArray, isObject, isFunction, isPromise,
-  isNull, isUndefined, isNullish,
-  isDate, isRegExp, isError,
-  isEmpty, isPlainObject, isPrimitive,
-  isSubstring, isPrefix, isSuffix
-} from '@devgrid/common';
+import { Onix, OrbitConfig } from '@onix-js/core';
 
-// Basic type checks
-isString('hello'); // => true
-isNumber(123); // => true
-isArray([1, 2, 3]); // => true
-isObject({}); // => true
-isFunction(() => {}); // => true
+const config: OrbitConfig = {
+  logLevel: 'info',
+  logFormat: 'json',
+  dryRun: false,
+  parallelLimit: 5,
+  defaultTimeout: 30000
+};
 
-// Null/undefined checks
-isNull(null); // => true
-isUndefined(undefined); // => true
-isNullish(null || undefined); // => true
-
-// Advanced checks
-isPromise(Promise.resolve()); // => true
-isPlainObject({ a: 1 }); // => true (not a class instance)
-isPrimitive(42); // => true
-isEmpty([]); // => true
-isEmpty(''); // => true
-isEmpty({}); // => true
-
-// String utilities
-isSubstring('world', 'hello world'); // => true
-isPrefix('hello', 'hello world'); // => true
-isSuffix('world', 'hello world'); // => true
+const onix = new Onix(config);
 ```
 
-### ⏱️ Promise Utilities
+### Playbook
 
-Advanced promise handling and control flow utilities.
+Represents a collection of tasks to be executed on target hosts.
 
 ```typescript
-import { 
-  defer, delay, timeout, retry, props,
-  promisify, callbackify, nodeify
-} from '@devgrid/common';
+import { Playbook, ShellTask, CopyTask } from '@onix-js/core';
 
-// defer - Create a deferred promise
-const deferred = defer<string>();
-deferred.promise.then(value => console.log(value));
-deferred.resolve('Success!');
+const playbook = new Playbook([
+  new ShellTask({
+    name: 'install-package',
+    command: 'apt install nginx -y'
+  }),
+  new CopyTask({
+    name: 'copy-config',
+    source: './nginx.conf',
+    destination: '/etc/nginx/nginx.conf'
+  })
+], {
+  name: 'deploy-nginx',
+  description: 'Deploy Nginx web server'
+});
+```
 
-// delay - Promise-based setTimeout
-await delay(1000); // Wait 1 second
-const result = await delay(1000, 'done'); // Wait and return value
+### Inventory
 
-// timeout - Add timeout to any promise
-try {
-  const data = await timeout(
-    fetch('https://api.example.com/data'),
-    5000 // 5 second timeout
-  );
-} catch (error) {
-  console.log('Request timed out');
-}
+Manages hosts and groups for task execution.
 
-// retry - Retry failed operations with exponential backoff
-const data = await retry(
-  async ({ current }) => {
-    console.log(`Attempt ${current}`);
-    return await fetch('/api/data');
-  },
-  {
-    max: 3, // Maximum 3 attempts
-    backoffBase: 1000, // Start with 1s delay
-    backoffExponent: 2, // Double delay each time
-    match: [NetworkError], // Only retry on specific errors
+```typescript
+import { Inventory, HostConfig } from '@onix-js/core';
+
+const inventory = new Inventory();
+
+// Add hosts
+inventory.addHost({
+  hostname: 'web1',
+  ip: '192.168.1.10',
+  username: 'admin',
+  port: 22,
+  tags: ['web', 'production']
+});
+
+// Create groups
+const webGroup = inventory.createGroup('webservers', ['web1', 'web2']);
+
+// Find hosts by tags
+const productionHosts = inventory.findHostsByTags(['production']);
+```
+
+## 🛠️ Task System
+
+### Available Task Types
+
+#### ShellTask
+
+Execute shell commands on remote hosts.
+
+```typescript
+import { ShellTask } from '@onix-js/core';
+
+const task = new ShellTask({
+  name: 'update-system',
+  command: 'apt update && apt upgrade -y',
+  timeout: 60000,
+  retries: 3
+});
+```
+
+#### CopyTask
+
+Copy files to remote hosts.
+
+```typescript
+import { CopyTask } from '@onix-js/core';
+
+const task = new CopyTask({
+  name: 'copy-config',
+  source: './config/app.conf',
+  destination: '/etc/app/app.conf',
+  timeout: 30000
+});
+```
+
+#### CompositeTask
+
+Combine multiple tasks into a single task.
+
+```typescript
+import { CompositeTask, ShellTask, CopyTask } from '@onix-js/core';
+
+const task = new CompositeTask([
+  new CopyTask({
+    name: 'copy-script',
+    source: './scripts/deploy.sh',
+    destination: '/tmp/deploy.sh'
+  }),
+  new ShellTask({
+    name: 'execute-script',
+    command: 'chmod +x /tmp/deploy.sh && /tmp/deploy.sh'
+  })
+], {
+  name: 'deploy-application'
+});
+```
+
+### Creating Custom Tasks
+
+```typescript
+import { Task, TaskOptions, OrbitResult, OrbitContext } from '@onix-js/core';
+
+export class CustomTask extends Task {
+  constructor(private customLogic: () => Promise<void>, options?: TaskOptions) {
+    super(options);
   }
-);
 
-// props - Resolve an object of promises
-const results = await props({
-  users: fetchUsers(),
-  posts: fetchPosts(),
-  comments: fetchComments()
-});
-// results = { users: [...], posts: [...], comments: [...] }
-
-// promisify - Convert callback-based functions to promises
-const readFile = promisify(fs.readFile);
-const content = await readFile('file.txt', 'utf8');
-
-// callbackify - Convert promise-based functions to callbacks
-const fetchCallback = callbackify(fetch);
-fetchCallback('url', (err, result) => {
-  if (err) console.error(err);
-  else console.log(result);
-});
-```
-
-### 🗂️ Object Utilities
-
-Functions for working with objects and their properties.
-
-```typescript
-import { omit, entries, keys, values } from '@devgrid/common';
-
-// omit - Create object copy without specified keys
-const user = { id: 1, name: 'John', password: 'secret' };
-const publicUser = omit(user, 'password'); 
-// => { id: 1, name: 'John' }
-
-// Deep omit
-const nested = { a: { b: { c: 1, d: 2 }, e: 3 }, f: 4 };
-const result = omit(nested, ['c', 'f'], { deep: true });
-// => { a: { b: { d: 2 }, e: 3 } }
-
-// entries/keys/values with advanced options
-const obj = { a: 1, b: 2 };
-Object.defineProperty(obj, 'hidden', { 
-  value: 3, 
-  enumerable: false 
-});
-
-entries(obj); // => [['a', 1], ['b', 2]]
-entries(obj, { enumOnly: false }); // => [['a', 1], ['b', 2], ['hidden', 3]]
-
-// Work with prototype chain
-class Parent {
-  inherited = 'parent';
-}
-class Child extends Parent {
-  own = 'child';
-}
-const instance = new Child();
-
-keys(instance); // => ['own', 'inherited']
-keys(instance, { followProto: false }); // => ['own']
-```
-
-### 📊 Data Structures
-
-Specialized data structures for common use cases.
-
-```typescript
-import { ListBuffer, TimedMap } from '@devgrid/common';
-
-// ListBuffer - Efficient list operations
-const buffer = new ListBuffer<number>();
-buffer.push(1, 2, 3);
-buffer.unshift(0);
-buffer.toArray(); // => [0, 1, 2, 3]
-
-// TimedMap - Map with automatic expiration
-const cache = new TimedMap<string, any>(60000); // 60 second TTL
-cache.set('key', 'value');
-cache.get('key'); // => 'value'
-// After 60 seconds:
-cache.get('key'); // => undefined
-```
-
-### 🔐 Cryptography Utilities
-
-```typescript
-import { cuid } from '@devgrid/common';
-
-// Generate collision-resistant unique identifiers
-const id = cuid(); // => "ck2qzqgwf0000a65z5rvfbhx5"
-```
-
-## Advanced Examples
-
-### Building a Retry System
-
-```typescript
-import { retry, delay, isError } from '@devgrid/common';
-
-async function resilientFetch(url: string) {
-  return retry(
-    async ({ current, total }) => {
-      console.log(`Attempt ${current}/${total}`);
-      
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-      
-      return response.json();
-    },
-    {
-      max: 5,
-      backoffBase: 1000,
-      backoffExponent: 2,
-      match: [Error],
-      report: (message, { current }, error) => {
-        console.warn(`Retry ${current}: ${error?.message}`);
-      }
+  async execute(context: OrbitContext): Promise<OrbitResult> {
+    try {
+      await this.customLogic();
+      return { success: true };
+    } catch (error) {
+      return { 
+        success: false, 
+        error: new OrbitError('CUSTOM_TASK_ERROR', error.message) 
+      };
     }
-  );
-}
-```
-
-### Type-Safe Object Filtering
-
-```typescript
-import { omit, isString, entries } from '@devgrid/common';
-
-function sanitizeUserInput<T extends object>(input: T): Partial<T> {
-  // Remove all non-string values
-  const stringEntries = entries(input)
-    .filter(([_, value]) => isString(value));
-  
-  // Reconstruct object with only string values
-  return Object.fromEntries(stringEntries);
-}
-
-// Remove sensitive fields
-function sanitizeUser(user: User) {
-  return omit(user, ['password', 'ssn', 'creditCard']);
-}
-```
-
-### Promise Timeout with Cleanup
-
-```typescript
-import { timeout, defer } from '@devgrid/common';
-
-async function fetchWithTimeout(url: string, ms: number) {
-  const controller = new AbortController();
-  
-  try {
-    const response = await timeout(
-      fetch(url, { signal: controller.signal }),
-      ms,
-      { 
-        message: `Request timeout after ${ms}ms`,
-        unref: true 
-      }
-    );
-    return response;
-  } catch (error) {
-    controller.abort();
-    throw error;
   }
 }
 ```
 
-## TypeScript Support
+## 🔌 SSH Client
 
-This library is written in TypeScript and provides comprehensive type definitions. All functions are fully typed with generics where appropriate.
+### Basic Usage
 
 ```typescript
-// Type inference works automatically
-const numbers = arrify(42); // number[]
-const mixed = arrify<string | number>('hello'); // (string | number)[]
+import { SSHClient, SSHConnectionOptions } from '@onix-js/core';
 
-// Type predicates provide type narrowing
-const value: unknown = 'hello';
-if (isString(value)) {
-  // TypeScript knows value is string here
-  console.log(value.toUpperCase());
-}
+const options: SSHConnectionOptions = {
+  host: '192.168.1.10',
+  port: 22,
+  username: 'admin',
+  password: 'password' // or use privateKey
+};
 
-// Generics preserve types
-const obj = { a: 1, b: 'two', c: true };
-const filtered = omit(obj, ['c']); // { a: number, b: string }
+const client = new SSHClient(options);
+await client.connect();
+
+const result = await client.executeCommand('ls -la');
+console.log(result.stdout);
+
+await client.close();
 ```
 
-## Performance Considerations
+### Connection Pooling
 
-- All predicates are optimized for performance with early returns
-- Object utilities use efficient algorithms for deep operations
-- Promise utilities properly handle cleanup and cancellation
-- Data structures are designed for specific use cases with optimal performance
+```typescript
+import { SSHClientFactory } from '@onix-js/core';
 
-## Contributing
+const factory = new SSHClientFactory();
+const client = await factory.createClient({
+  host: '192.168.1.10',
+  username: 'admin',
+  privateKey: fs.readFileSync('/path/to/key')
+});
+```
 
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+## 📊 Logging & Metrics
 
-## License
+### Logger Configuration
 
-MIT © DevGrid
+```typescript
+import { LoggerFactory, LoggerFormat } from '@onix-js/core';
+
+const logger = LoggerFactory.createLogger({
+  format: 'json',
+  level: 'info'
+});
+
+logger.info('Task started', { taskName: 'deploy-app' });
+logger.error('Task failed', { error: 'Connection timeout' });
+```
+
+### Metrics Collection
+
+```typescript
+import { metricsRegistry, taskCounter, taskDuration } from '@onix-js/core';
+
+// Metrics are automatically collected
+const metrics = await metricsRegistry.metrics();
+console.log(metrics);
+```
+
+## 🔄 Error Handling
+
+### Retry Policy
+
+```typescript
+import { RetryPolicy, RetryPolicyOptions } from '@onix-js/core';
+
+const retryPolicy = new RetryPolicy({
+  maxRetries: 3,
+  backoffMultiplier: 2,
+  initialDelay: 1000
+});
+
+const result = await retryPolicy.execute(async () => {
+  return await riskyOperation();
+});
+```
+
+### Error Types
+
+```typescript
+import { OrbitError } from '@onix-js/core';
+
+throw new OrbitError(
+  'SSH_CONNECTION_FAILED',
+  'Failed to connect to host',
+  { host: '192.168.1.10', port: 22 }
+);
+```
+
+## 📝 Template Engine
+
+### Variable Substitution
+
+```typescript
+import { TemplateEngine, Variables } from '@onix-js/core';
+
+const variables = new Variables({
+  appName: 'myapp',
+  version: '1.0.0',
+  environment: 'production'
+});
+
+const engine = new TemplateEngine(variables);
+const result = engine.render('Hello {{appName}} v{{version}}!');
+// Result: "Hello myapp v1.0.0!"
+```
+
+## 🎯 Events
+
+### Event System
+
+```typescript
+import { OrbitEvents, OrbitEvent } from '@onix-js/core';
+
+OrbitEvents.on(OrbitEvent.TASK_STARTED, (payload) => {
+  console.log('Task started:', payload.taskName);
+});
+
+OrbitEvents.on(OrbitEvent.TASK_COMPLETED, (payload) => {
+  console.log('Task completed:', payload.taskName, payload.duration);
+});
+```
+
+## 📚 API Reference
+
+### Main Exports
+
+```typescript
+import {
+  // Core classes
+  Onix,
+  Playbook,
+  Inventory,
+  Variables,
+  
+  // Task system
+  Task,
+  ShellTask,
+  CopyTask,
+  CompositeTask,
+  SSHTaskExecutor,
+  
+  // SSH client
+  SSHClient,
+  SSHClientFactory,
+  MockSSHClient,
+  
+  // Logging & metrics
+  LoggerFactory,
+  StructuredLogger,
+  metricsRegistry,
+  
+  // Error handling
+  OrbitError,
+  RetryPolicy,
+  
+  // Events
+  OrbitEvents,
+  OrbitEvent,
+  
+  // Types
+  OrbitConfig,
+  OrbitContext,
+  Logger,
+  TaskOptions
+} from '@onix-js/core';
+```
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
