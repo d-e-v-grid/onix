@@ -1,8 +1,8 @@
 import { Task } from '../tasks/task.js';
 import { Playbook } from '../playbooks/playbook.js';
 import { Inventory } from '../inventory/inventory.js';
+import { OnixConfig } from '../config/onix-config.js';
 import { Variables } from '../templating/variables.js';
-import { OrbitConfig } from '../config/orbit-config.js';
 import { TemplateLoader } from './loaders/template-loader.js';
 
 export interface InfrastructureOptions {
@@ -11,7 +11,7 @@ export interface InfrastructureOptions {
   tasks: Record<string, Task>;
   templates?: TemplateLoader;
   variables: Variables;
-  settings: OrbitConfig;
+  settings: OnixConfig;
 }
 
 export class Infrastructure {
@@ -20,7 +20,7 @@ export class Infrastructure {
   public readonly tasks: Record<string, Task>;
   public readonly templates?: TemplateLoader;
   public readonly variables: Variables;
-  public readonly settings: OrbitConfig;
+  public readonly settings: OnixConfig;
 
   constructor(options: InfrastructureOptions) {
     this.inventory = options.inventory;

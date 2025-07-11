@@ -1,5 +1,4 @@
 import { Command } from 'commander';
-
 import { Inventory } from '@onix-js/core';
 
 export const inventoryCommand = (program: Command, inventory: Inventory) => {

@@ -1,5 +1,4 @@
 import { Command } from 'commander';
-
 import { metricsRegistry } from '@onix-js/core';
 
 export const metricsCommand = (program: Command) => {

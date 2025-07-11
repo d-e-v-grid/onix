@@ -2,11 +2,11 @@ import { EventEmitter } from 'events';
 
 import { Task } from '../tasks/task.js';
 import { Host } from '../inventory/host.js';
-import { OrbitError } from '../errors/error.js';
-import { OrbitContext } from '../types/common.js';
+import { OnixError } from '../errors/error.js';
+import { OnixContext } from '../types/common.js';
 import { taskCounter, taskDuration, errorCounter, playbookCounter } from '../logging/metrics.js';
 
-export enum OrbitEvent {
+export enum OnixEvent {
   TaskStart = 'task:start',
   TaskComplete = 'task:complete',
   TaskError = 'task:error',
@@ -16,8 +16,8 @@ export enum OrbitEvent {
 }
 
 export interface ErrorEventPayload {
-  error: OrbitError;
-  context: OrbitContext;
+  error: OnixError;
+  context: OnixContext;
   meta?: Record<string, any>;
 }
 
@@ -35,12 +35,12 @@ export interface PlaybookEventPayload {
   dryRun?: boolean;
 }
 
-export const OrbitEvents = new EventEmitter();
+export const OnixEvents = new EventEmitter();
 
 // Дополнительная логика для метрик
 const taskTimers = new Map<string, number>();
 
-OrbitEvents.on(OrbitEvent.ErrorOccurred, ({ error, context }: ErrorEventPayload) => {
+OnixEvents.on(OnixEvent.ErrorOccurred, ({ error, context }: ErrorEventPayload) => {
   const { logger, config, alertingService } = context;
 
   logger.error(`Global error: ${error.message}`, {
@@ -67,12 +67,12 @@ OrbitEvents.on(OrbitEvent.ErrorOccurred, ({ error, context }: ErrorEventPayload)
   }
 });
 
-OrbitEvents.on(OrbitEvent.TaskStart, ({ task, host }: TaskEventPayload) => {
+OnixEvents.on(OnixEvent.TaskStart, ({ task, host }: TaskEventPayload) => {
   const key = `${task.name}:${host.hostname}`;
   taskTimers.set(key, Date.now());
 });
 
-OrbitEvents.on(OrbitEvent.TaskComplete, ({ task, host }: TaskEventPayload) => {
+OnixEvents.on(OnixEvent.TaskComplete, ({ task, host }: TaskEventPayload) => {
   const key = `${task.name}:${host.hostname}`;
   const start = taskTimers.get(key);
   if (start) {
@@ -83,7 +83,7 @@ OrbitEvents.on(OrbitEvent.TaskComplete, ({ task, host }: TaskEventPayload) => {
   taskCounter.labels(task.name, host.hostname, 'success').inc();
 });
 
-OrbitEvents.on(OrbitEvent.TaskError, ({ task, host }: TaskEventPayload) => {
+OnixEvents.on(OnixEvent.TaskError, ({ task, host }: TaskEventPayload) => {
   const key = `${task.name}:${host.hostname}`;
   const start = taskTimers.get(key);
   if (start) {
@@ -94,10 +94,10 @@ OrbitEvents.on(OrbitEvent.TaskError, ({ task, host }: TaskEventPayload) => {
   taskCounter.labels(task.name, host.hostname, 'error').inc();
 });
 
-OrbitEvents.on(OrbitEvent.PlaybookStart, ({ playbookName }: PlaybookEventPayload) => {
+OnixEvents.on(OnixEvent.PlaybookStart, ({ playbookName }: PlaybookEventPayload) => {
   playbookCounter.labels(playbookName, 'started').inc();
 });
 
-OrbitEvents.on(OrbitEvent.PlaybookComplete, ({ playbookName }: PlaybookEventPayload) => {
+OnixEvents.on(OnixEvent.PlaybookComplete, ({ playbookName }: PlaybookEventPayload) => {
   playbookCounter.labels(playbookName, 'completed').inc();
 });

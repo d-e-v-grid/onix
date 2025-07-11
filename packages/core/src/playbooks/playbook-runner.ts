@@ -1,17 +1,17 @@
 import { Task } from '../tasks/task.js';
 import { Playbook } from './playbook.js';
 import { Host } from '../inventory/host.js';
-import { OrbitResult, OrbitContext } from '../types/common.js';
-import { OrbitEvent, OrbitEvents, PlaybookEventPayload } from '../events/orbit-events.js';
+import { OnixResult, OnixContext } from '../types/common.js';
+import { OnixEvent, OnixEvents, PlaybookEventPayload } from '../events/onix-events.js';
 
 export class PlaybookRunner {
-  constructor(private context: OrbitContext) { }
+  constructor(private context: OnixContext) { }
 
-  async run(playbook: Playbook, hosts: Host[]): Promise<Record<string, OrbitResult[]>> {
-    const results: Record<string, OrbitResult[]> = {};
+  async run(playbook: Playbook, hosts: Host[]): Promise<Record<string, OnixResult[]>> {
+    const results: Record<string, OnixResult[]> = {};
 
     // Событие запуска плейбука
-    OrbitEvents.emit(OrbitEvent.PlaybookStart, {
+    OnixEvents.emit(OnixEvent.PlaybookStart, {
       playbookName: playbook.name,
       timestamp: new Date(),
       dryRun: this.context.config.dryRun,
@@ -47,7 +47,7 @@ export class PlaybookRunner {
     }
 
     // Событие завершения плейбука
-    OrbitEvents.emit(OrbitEvent.PlaybookComplete, {
+    OnixEvents.emit(OnixEvent.PlaybookComplete, {
       playbookName: playbook.name,
       timestamp: new Date(),
       dryRun: this.context.config.dryRun,

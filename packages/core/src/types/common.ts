@@ -1,11 +1,11 @@
-import { OrbitError } from "../errors/error.js";
-import { OrbitConfig } from "../config/orbit-config.js";
+import { OnixError } from "../errors/error.js";
+import { OnixConfig } from "../config/onix-config.js";
 import { Variables } from "../templating/variables.js";
 
-export type OrbitResult<T = any> = {
+export type OnixResult<T = any> = {
   success: boolean;
   data?: T;
-  error?: OrbitError;
+  error?: OnixError;
 };
 
 
@@ -31,12 +31,12 @@ export interface AlertingService {
 }
 
 export interface ErrorHandler {
-  handleError(error: OrbitError, meta?: Record<string, any>): void;
+  handleError(error: OnixError, meta?: Record<string, any>): void;
 }
 
-export interface OrbitContext {
+export interface OnixContext {
   variables: Variables;
-  config: OrbitConfig;
+  config: OnixConfig;
   logger: Logger;
   errorHandler: ErrorHandler;
   alertingService?: AlertingService;

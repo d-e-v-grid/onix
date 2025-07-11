@@ -1,14 +1,13 @@
 import { Command } from "commander";
-
 import {
   Host,
-  OrbitContext,
   Playbook,
   Inventory,
+  OnixContext,
   PlaybookRunner
 } from '@onix-js/core';
 
-export const deployCommand = (program: Command, context: OrbitContext, inventory: Inventory) => {
+export const deployCommand = (program: Command, context: OnixContext, inventory: Inventory) => {
   program
     .command('deploy <playbook> [hosts...]')
     .description('Deploy a specified playbook to hosts')

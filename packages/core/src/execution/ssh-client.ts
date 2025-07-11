@@ -1,6 +1,6 @@
 import { Client, ConnectConfig } from 'ssh2';
 
-import { OrbitError } from '../errors/error.js';
+import { OnixError } from '../errors/error.js';
 import { ISSHClient, SSHCommandResult, SSHCommandOptions, SSHConnectionOptions } from '../types/ssh.js';
 
 export class SSHClient implements ISSHClient {
@@ -27,7 +27,7 @@ export class SSHClient implements ISSHClient {
           this.isConnected = true;
           resolve();
         })
-        .on('error', err => reject(new OrbitError(`SSH connection error: ${err.message}`, 'SSH_CONNECTION_ERROR')))
+        .on('error', err => reject(new OnixError(`SSH connection error: ${err.message}`, 'SSH_CONNECTION_ERROR')))
         .connect(connectionConfig);
     });
   }
@@ -35,7 +35,7 @@ export class SSHClient implements ISSHClient {
   executeCommand(command: string, options?: SSHCommandOptions): Promise<SSHCommandResult> {
     return new Promise((resolve, reject) => {
       if (!this.isConnected) {
-        reject(new OrbitError('SSH client not connected', 'SSH_NOT_CONNECTED'));
+        reject(new OnixError('SSH client not connected', 'SSH_NOT_CONNECTED'));
         return;
       }
 
@@ -43,7 +43,7 @@ export class SSHClient implements ISSHClient {
 
       this.client.exec(command, options || {}, (err, stream) => {
         if (err) {
-          reject(new OrbitError(`SSH exec error: ${err.message}`, 'SSH_EXEC_ERROR'));
+          reject(new OnixError(`SSH exec error: ${err.message}`, 'SSH_EXEC_ERROR'));
           return;
         }
 
@@ -53,7 +53,7 @@ export class SSHClient implements ISSHClient {
         if (options?.timeout) {
           timeoutId = setTimeout(() => {
             stream.close();
-            reject(new OrbitError(`SSH command timeout: ${command}`, 'SSH_COMMAND_TIMEOUT'));
+            reject(new OnixError(`SSH command timeout: ${command}`, 'SSH_COMMAND_TIMEOUT'));
           }, options.timeout);
         }
 
@@ -71,19 +71,19 @@ export class SSHClient implements ISSHClient {
   uploadFile(localPath: string, remotePath: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this.isConnected) {
-        reject(new OrbitError('SSH client not connected', 'SSH_NOT_CONNECTED'));
+        reject(new OnixError('SSH client not connected', 'SSH_NOT_CONNECTED'));
         return;
       }
 
       this.client.sftp((err, sftp) => {
         if (err) {
-          reject(new OrbitError(`SFTP error: ${err.message}`, 'SFTP_ERROR'));
+          reject(new OnixError(`SFTP error: ${err.message}`, 'SFTP_ERROR'));
           return;
         }
 
         sftp.fastPut(localPath, remotePath, (err_) => {
           if (err_) {
-            reject(new OrbitError(`SFTP upload error: ${err_.message}`, 'SFTP_UPLOAD_ERROR'));
+            reject(new OnixError(`SFTP upload error: ${err_.message}`, 'SFTP_UPLOAD_ERROR'));
             return;
           }
 

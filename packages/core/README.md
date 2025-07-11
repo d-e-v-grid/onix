@@ -81,9 +81,9 @@ const results = await runner.run(playbook, inventory.listHosts());
 Main orchestration class that provides the entry point for all operations.
 
 ```typescript
-import { Onix, OrbitConfig } from '@onix-js/core';
+import { Onix, OnixConfig } from '@onix-js/core';
 
-const config: OrbitConfig = {
+const config: OnixConfig = {
   logLevel: 'info',
   logFormat: 'json',
   dryRun: false,
@@ -201,21 +201,21 @@ const task = new CompositeTask([
 ### Creating Custom Tasks
 
 ```typescript
-import { Task, TaskOptions, OrbitResult, OrbitContext } from '@onix-js/core';
+import { Task, TaskOptions, OnixResult, OnixContext } from '@onix-js/core';
 
 export class CustomTask extends Task {
   constructor(private customLogic: () => Promise<void>, options?: TaskOptions) {
     super(options);
   }
 
-  async execute(context: OrbitContext): Promise<OrbitResult> {
+  async execute(context: OnixContext): Promise<OnixResult> {
     try {
       await this.customLogic();
       return { success: true };
     } catch (error) {
       return { 
         success: false, 
-        error: new OrbitError('CUSTOM_TASK_ERROR', error.message) 
+        error: new OnixError('CUSTOM_TASK_ERROR', error.message) 
       };
     }
   }
@@ -305,9 +305,9 @@ const result = await retryPolicy.execute(async () => {
 ### Error Types
 
 ```typescript
-import { OrbitError } from '@onix-js/core';
+import { OnixError } from '@onix-js/core';
 
-throw new OrbitError(
+throw new OnixError(
   'SSH_CONNECTION_FAILED',
   'Failed to connect to host',
   { host: '192.168.1.10', port: 22 }
@@ -337,13 +337,13 @@ const result = engine.render('Hello {{appName}} v{{version}}!');
 ### Event System
 
 ```typescript
-import { OrbitEvents, OrbitEvent } from '@onix-js/core';
+import { OnixEvents, OnixEvent } from '@onix-js/core';
 
-OrbitEvents.on(OrbitEvent.TASK_STARTED, (payload) => {
+OnixEvents.on(OnixEvent.TASK_STARTED, (payload) => {
   console.log('Task started:', payload.taskName);
 });
 
-OrbitEvents.on(OrbitEvent.TASK_COMPLETED, (payload) => {
+OnixEvents.on(OnixEvent.TASK_COMPLETED, (payload) => {
   console.log('Task completed:', payload.taskName, payload.duration);
 });
 ```
@@ -378,16 +378,16 @@ import {
   metricsRegistry,
   
   // Error handling
-  OrbitError,
+  OnixError,
   RetryPolicy,
   
   // Events
-  OrbitEvents,
-  OrbitEvent,
+  OnixEvents,
+  OnixEvent,
   
   // Types
-  OrbitConfig,
-  OrbitContext,
+  OnixConfig,
+  OnixContext,
   Logger,
   TaskOptions
 } from '@onix-js/core';

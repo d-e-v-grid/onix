@@ -8,7 +8,7 @@ collectDefaultMetrics({ register: metricsRegistry });
 
 // Метрики количества выполненных задач
 export const taskCounter = new Counter({
-  name: 'orbit_tasks_total',
+  name: 'onix_tasks_total',
   help: 'Total number of tasks executed',
   labelNames: ['taskName', 'host', 'status'],
   registers: [metricsRegistry],
@@ -16,7 +16,7 @@ export const taskCounter = new Counter({
 
 // Метрики времени выполнения задач
 export const taskDuration = new Histogram({
-  name: 'orbit_task_duration_seconds',
+  name: 'onix_task_duration_seconds',
   help: 'Task execution duration in seconds',
   labelNames: ['taskName', 'host'],
   registers: [metricsRegistry],
@@ -24,7 +24,7 @@ export const taskDuration = new Histogram({
 
 // Метрики количества выполненных плейбуков
 export const playbookCounter = new Counter({
-  name: 'orbit_playbooks_total',
+  name: 'onix_playbooks_total',
   help: 'Total number of playbooks executed',
   labelNames: ['playbookName', 'status'],
   registers: [metricsRegistry],
@@ -32,7 +32,7 @@ export const playbookCounter = new Counter({
 
 // Метрика ошибок
 export const errorCounter = new Counter({
-  name: 'orbit_errors_total',
+  name: 'onix_errors_total',
   help: 'Total number of errors encountered',
   labelNames: ['errorCode'],
   registers: [metricsRegistry],

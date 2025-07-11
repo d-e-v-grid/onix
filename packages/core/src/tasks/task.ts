@@ -1,7 +1,7 @@
 import { Host } from '../inventory/host.js';
-import { OrbitError } from '../errors/error.js';
-import { OrbitResult, OrbitContext } from '../types/common.js';
-import { OrbitEvent, OrbitEvents, TaskEventPayload } from '../events/orbit-events.js';
+import { OnixError } from '../errors/error.js';
+import { OnixResult, OnixContext } from '../types/common.js';
+import { OnixEvent, OnixEvents, TaskEventPayload } from '../events/onix-events.js';
 
 export interface TaskOptions {
   name?: string;
@@ -20,13 +20,13 @@ export abstract class Task {
     this.retries = options?.retries ?? 0;
   }
 
-  protected abstract execute(host: Host, context: OrbitContext): Promise<OrbitResult>;
+  protected abstract execute(host: Host, context: OnixContext): Promise<OnixResult>;
 
-  public abstract rollback(host: Host, context: OrbitContext): Promise<OrbitResult>;
+  public abstract rollback(host: Host, context: OnixContext): Promise<OnixResult>;
 
-  public async executeWithRetry(host: Host, context: OrbitContext): Promise<OrbitResult> {
+  public async executeWithRetry(host: Host, context: OnixContext): Promise<OnixResult> {
     let attempts = 0;
-    let lastError: OrbitError | undefined;
+    let lastError: OnixError | undefined;
 
     while (attempts <= this.retries) {
       const payload: TaskEventPayload = {
@@ -37,7 +37,7 @@ export abstract class Task {
       };
 
       try {
-        OrbitEvents.emit(OrbitEvent.TaskStart, payload);
+        OnixEvents.emit(OnixEvent.TaskStart, payload);
         context.logger.info(`Task "${this.name}" started on "${host.hostname}"`, {
           dryRun: context.config.dryRun,
           attempt: attempts + 1,
@@ -45,7 +45,7 @@ export abstract class Task {
         });
 
         if (context.config.dryRun) {
-          OrbitEvents.emit(OrbitEvent.TaskComplete, payload);
+          OnixEvents.emit(OnixEvent.TaskComplete, payload);
           context.logger.info(`[DRY-RUN] Task "${this.name}" simulated successfully on "${host.hostname}"`);
           return { success: true, data: 'dry-run' };
         }
@@ -53,19 +53,19 @@ export abstract class Task {
         const result = await this.execute(host, context);
 
         if (result.success) {
-          OrbitEvents.emit(OrbitEvent.TaskComplete, payload);
+          OnixEvents.emit(OnixEvent.TaskComplete, payload);
           context.logger.info(`Task "${this.name}" completed successfully on "${host.hostname}"`);
           return result;
         } else {
-          throw result.error || new OrbitError('TASK_EXECUTION_FAILED', `Task "${this.name}" failed without specific error`);
+          throw result.error || new OnixError('TASK_EXECUTION_FAILED', `Task "${this.name}" failed without specific error`);
         }
 
       } catch (error: any) {
         attempts += 1;
 
-        lastError = error instanceof OrbitError
+        lastError = error instanceof OnixError
           ? error
-          : new OrbitError('UNHANDLED_TASK_EXCEPTION', error.message, { stack: error.stack });
+          : new OnixError('UNHANDLED_TASK_EXCEPTION', error.message, { stack: error.stack });
 
         context.errorHandler.handleError(lastError, {
           task: this.name,
@@ -74,7 +74,7 @@ export abstract class Task {
           retries: this.retries,
         });
 
-        OrbitEvents.emit(OrbitEvent.TaskError, {
+        OnixEvents.emit(OnixEvent.TaskError, {
           ...payload,
           error: lastError,
         });
@@ -91,7 +91,7 @@ export abstract class Task {
 
     return {
       success: false,
-      error: lastError || new OrbitError('UNKNOWN_TASK_FAILURE', `Unknown error occurred in task "${this.name}"`),
+      error: lastError || new OnixError('UNKNOWN_TASK_FAILURE', `Unknown error occurred in task "${this.name}"`),
     };
   }
 }

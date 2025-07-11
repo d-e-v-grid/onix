@@ -1,6 +1,6 @@
 import { SSHClient } from './ssh-client.js';
 import { Host } from '../inventory/host.js';
-import { OrbitError } from '../errors/error.js';
+import { OnixError } from '../errors/error.js';
 import { Command, CommandResult } from './command.js';
 
 export interface ExecutionOptions {
@@ -35,7 +35,7 @@ export class Executor {
           results[host.hostname]?.push(result);
 
           if (result.exitCode !== 0 && !this.options?.continueOnError) {
-            throw new OrbitError('COMMAND_EXECUTION_FAILED', `Command failed on ${host.hostname}: ${fullCommand}`, { stdout: result.stdout, stderr: result.stderr });
+            throw new OnixError('COMMAND_EXECUTION_FAILED', `Command failed on ${host.hostname}: ${fullCommand}`, { stdout: result.stdout, stderr: result.stderr });
 
           }
         } catch (error) {

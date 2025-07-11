@@ -1,8 +1,7 @@
 import { Command } from 'commander';
+import { OnixContext } from '@onix-js/core';
 
-import { OrbitContext } from '@onix-js/core';
-
-export const playbookCommand = (program: Command, context: OrbitContext) => {
+export const playbookCommand = (program: Command, context: OnixContext) => {
   const pbCommand = program.command('playbook').description('Manage playbooks');
 
   pbCommand

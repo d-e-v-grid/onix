@@ -1,7 +1,7 @@
 import { Host } from '../inventory/host.js';
 import { Task, TaskOptions } from './task.js';
 import { SSHTaskExecutor } from './ssh-task-executor.js';
-import { OrbitResult, OrbitContext } from '../types/common.js';
+import { OnixResult, OnixContext } from '../types/common.js';
 
 export interface CopyTaskOptions extends TaskOptions {
   localPath: string;
@@ -14,7 +14,7 @@ export class CopyTask extends Task {
     super(options);
   }
 
-  protected async execute(host: Host, context: OrbitContext): Promise<OrbitResult> {
+  protected async execute(host: Host, context: OnixContext): Promise<OnixResult> {
     const executor = new SSHTaskExecutor({
       host: host.ip,
       username: host.username,
@@ -32,7 +32,7 @@ export class CopyTask extends Task {
     }
   }
 
-  override async rollback(host: Host, context: OrbitContext): Promise<OrbitResult> {
+  override async rollback(host: Host, context: OnixContext): Promise<OnixResult> {
     const executor = new SSHTaskExecutor({
       host: host.ip,
       username: host.username,

@@ -1,4 +1,4 @@
-import { OrbitError } from '../errors/error.js';
+import { OnixError } from '../errors/error.js';
 import { SSHClientFactory } from '../execution/ssh-client-factory.js';
 import { SSHCommandResult, SSHCommandOptions } from '../types/ssh.js';
 
@@ -30,7 +30,7 @@ export class SSHTaskExecutor {
     try {
       const result = await sshClient.executeCommand(command, commandOptions);
       if (result.exitCode !== 0) {
-        throw new OrbitError('SSH_COMMAND_FAILED', `Command failed: ${command}`, {
+        throw new OnixError('SSH_COMMAND_FAILED', `Command failed: ${command}`, {
           stdout: result.stdout,
           stderr: result.stderr,
           exitCode: result.exitCode,

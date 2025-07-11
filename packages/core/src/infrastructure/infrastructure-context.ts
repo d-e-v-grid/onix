@@ -1,8 +1,8 @@
 import { Logger } from '../types/common.js';
 import { Infrastructure } from './infrastructure.js';
 import { Inventory } from '../inventory/inventory.js';
+import { OnixConfig } from '../config/onix-config.js';
 import { Variables } from '../templating/variables.js';
-import { OrbitConfig } from '../config/orbit-config.js';
 import { LoggerFactory } from '../logging/logger-factory.js';
 
 export interface InfrastructureContextOptions {
@@ -13,7 +13,7 @@ export interface InfrastructureContextOptions {
 export class InfrastructureContext {
   public readonly inventory: Inventory;
   public readonly variables: Variables;
-  public readonly settings: OrbitConfig;
+  public readonly settings: OnixConfig;
   public readonly logger: Logger;
 
   constructor(private options: InfrastructureContextOptions) {
@@ -35,7 +35,7 @@ export class InfrastructureContext {
     this.variables.set(name, value);
   }
 
-  getSetting<K extends keyof OrbitConfig>(name: K): OrbitConfig[K] {
+  getSetting<K extends keyof OnixConfig>(name: K): OnixConfig[K] {
     return this.settings[name];
   }
 

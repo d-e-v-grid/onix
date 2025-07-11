@@ -2,18 +2,18 @@ import { Playbook } from './playbooks/playbook.js';
 import { Inventory } from './inventory/inventory.js';
 import { Variables } from './templating/variables.js';
 import { LoggerFactory } from './logging/logger-factory.js';
-import { OrbitErrorHandler } from './errors/error-handler.js';
-import { Logger, OrbitContext, AlertingService } from './types/common.js';
-import { OrbitConfig, defaultOrbitConfig } from './config/orbit-config.js';
+import { OnixErrorHandler } from './errors/error-handler.js';
+import { OnixConfig, defaultOnixConfig } from './config/onix-config.js';
+import { Logger, OnixContext, AlertingService } from './types/common.js';
 import { DefaultAlertingService } from './alerting/default-alerting-service.js';
 
 export class Onix {
   public readonly inventory: Inventory;
-  public readonly context: OrbitContext;
+  public readonly context: OnixContext;
   private readonly logger: Logger;
 
-  constructor(config?: OrbitConfig, alertingService?: AlertingService) {
-    const mergedConfig = { ...defaultOrbitConfig, ...config };
+  constructor(config?: OnixConfig, alertingService?: AlertingService) {
+    const mergedConfig = { ...defaultOnixConfig, ...config };
     const variables = new Variables({ playbooks: {} });
     this.logger = LoggerFactory.createLogger({
       format: mergedConfig.logFormat,
@@ -25,7 +25,7 @@ export class Onix {
       variables,
       config: mergedConfig,
       logger: this.logger,
-      errorHandler: new OrbitErrorHandler(this.logger),
+      errorHandler: new OnixErrorHandler(this.logger),
       alertingService: alertingService || new DefaultAlertingService(this.logger),
     };
 

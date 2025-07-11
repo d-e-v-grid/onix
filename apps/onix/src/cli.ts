@@ -1,16 +1,16 @@
 import { Command } from 'commander';
-
 import {
   Onix,
   Logger,
-  LoggerLevel,
-  StructuredLogger,
-  ConfigLoader,
   LogFormat,
-  OrbitConfig,
+  OnixConfig,
+  LoggerLevel,
+  ConfigLoader,
+  StructuredLogger,
   JsonLogFormatter,
   SimpleLogFormatter
 } from '@onix-js/core';
+
 import { deployCommand } from './commands/deploy.js';
 import { metricsCommand } from './commands/metrics.js';
 import { playbookCommand } from './commands/playbook.js';
@@ -30,7 +30,7 @@ program
 program.parse(process.argv);
 const options = program.opts();
 
-const config: OrbitConfig = options["config"]
+const config: OnixConfig = options["config"]
   ? ConfigLoader.loadFromFile(options["config"])
   : ConfigLoader.loadFromEnv();
 

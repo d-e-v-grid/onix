@@ -1,10 +1,10 @@
 import { join } from 'path';
 
 import { FileLoader } from '../../utils/file-loader.js';
-import { OrbitConfig, defaultOrbitConfig } from '../../config/orbit-config.js';
+import { OnixConfig, defaultOnixConfig } from '../../config/onix-config.js';
 
 export class InfrastructureConfigLoader {
-  private config: OrbitConfig = { ...defaultOrbitConfig };
+  private config: OnixConfig = { ...defaultOnixConfig };
 
   constructor(private configDir: string) { }
 
@@ -21,7 +21,7 @@ export class InfrastructureConfigLoader {
     }
   }
 
-  getSettings(): OrbitConfig {
+  getSettings(): OnixConfig {
     return this.config;
   }
 }

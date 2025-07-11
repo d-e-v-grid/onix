@@ -1,6 +1,6 @@
 export type LogFormat = 'json' | 'simple';
 
-export interface OrbitConfig {
+export interface OnixConfig {
   name?: string;
   description?: string;
 
@@ -28,7 +28,7 @@ export interface OrbitConfig {
   alertingEnabled?: boolean;
 }
 
-export const defaultOrbitConfig: OrbitConfig = {
+export const defaultOnixConfig: OnixConfig = {
   parallelLimit: 5,
   defaultTimeout: 30000,
   dryRun: false,

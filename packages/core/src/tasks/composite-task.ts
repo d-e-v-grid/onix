@@ -1,14 +1,14 @@
 import { Host } from '../inventory/host.js';
 import { Task, TaskOptions } from './task.js';
-import { OrbitResult, OrbitContext } from '../types/common.js';
+import { OnixResult, OnixContext } from '../types/common.js';
 
 export class CompositeTask extends Task {
   constructor(private tasks: Task[], options?: TaskOptions) {
     super(options);
   }
 
-  protected async execute(host: Host, context: OrbitContext): Promise<OrbitResult> {
-    const results: OrbitResult[] = [];
+  protected async execute(host: Host, context: OnixContext): Promise<OnixResult> {
+    const results: OnixResult[] = [];
 
     for (const task of this.tasks) {
       const result = await task.executeWithRetry(host, context);
@@ -26,10 +26,10 @@ export class CompositeTask extends Task {
     return { success: true, data: results };
   }
 
-  public async rollback(host: Host, context: OrbitContext): Promise<OrbitResult> {
+  public async rollback(host: Host, context: OnixContext): Promise<OnixResult> {
     context.logger.info(`Rolling back CompositeTask "${this.name}" on host "${host.hostname}"`);
 
-    const rollbackResults: OrbitResult[] = [];
+    const rollbackResults: OnixResult[] = [];
 
     for (const task of [...this.tasks].reverse()) {
       try {
