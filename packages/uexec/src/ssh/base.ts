@@ -157,7 +157,7 @@ async function makeDirectoryWithSftp(path: string, sftp: SFTPWrapper) {
         }
       })
     })
-  } catch (err) {
+  } catch (err: any) {
     if (err != null && typeof err.stack === 'string') {
       const matches = SFTP_MKDIR_ERR_CODE_REGEXP.exec(err.stack)
       if (matches != null) {
@@ -219,7 +219,7 @@ export class NodeSSH {
         // Must be an fs path
         try {
           config.privateKey = await readFile(config.privateKeyPath)
-        } catch (err) {
+        } catch (err: any) {
           if (err != null && err.code === 'ENOENT') {
             throw new AssertionError({ message: 'config.privateKeyPath does not exist at given fs path' })
           }
@@ -600,7 +600,7 @@ export class NodeSSH {
 
         queue.waitTillIdle().then(resolve)
       })
-    } catch (error) {
+    } catch (error: any) {
       if (error != null) {
         error.transferred = transferred
       }
@@ -680,7 +680,7 @@ export class NodeSSH {
                 tick(localFile, remoteFile, null)
               } catch (_) {
                 failed = true
-                tick(localFile, remoteFile, _)
+                tick(localFile, remoteFile, _ as any)
               }
             })
             .catch(reject)
@@ -797,7 +797,7 @@ export class NodeSSH {
                 tick(localFile, remoteFile, null)
               } catch (_) {
                 failed = true
-                tick(localFile, remoteFile, _)
+                tick(localFile, remoteFile, _ as any)
               }
             })
             .catch(reject)

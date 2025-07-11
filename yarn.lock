@@ -1736,6 +1736,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@onix-js/unified-exec@workspace:packages/uexec":
+  version: 0.0.0-use.local
+  resolution: "@onix-js/unified-exec@workspace:packages/uexec"
+  dependencies:
+    "@types/jest": "npm:^30.0.0"
+    "@types/node": "npm:^24.0.10"
+    jest: "npm:^30.0.4"
+    sb-promise-queue: "npm:^2.1.1"
+    sb-scandir: "npm:^3.1.1"
+    shell-escape: "npm:^0.2.0"
+    ssh2: "npm:^1.16.0"
+    ts-jest: "npm:^29.4.0"
+    typescript: "npm:^5.8.3"
+    zx: "npm:8.7.0"
+  languageName: unknown
+  linkType: soft
+
 "@opentelemetry/api@npm:^1.4.0":
   version: 1.9.0
   resolution: "@opentelemetry/api@npm:1.9.0"
@@ -6500,6 +6517,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sb-promise-queue@npm:^2.1.0, sb-promise-queue@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "sb-promise-queue@npm:2.1.1"
+  checksum: 10c0/70da5871fc1b15390c83959366fc4e6d46b7766e95c435a1776eb2a3b4c39c5a99f5e86306a746fd4770a93f23bef30a6c54388769f0429424dcabd3e8bb6cfa
+  languageName: node
+  linkType: hard
+
+"sb-scandir@npm:^3.1.1":
+  version: 3.1.1
+  resolution: "sb-scandir@npm:3.1.1"
+  dependencies:
+    sb-promise-queue: "npm:^2.1.0"
+  checksum: 10c0/4812d1677dc18ef0212276b2069cbe03ed62619c1efa0f62614e1301389bdd255dd5c614e38c14a3b58bf5505021056b6c4cf5f49f01615321b01985d9e0243f
+  languageName: node
+  linkType: hard
+
 "semver@npm:^6.3.1":
   version: 6.3.1
   resolution: "semver@npm:6.3.1"
@@ -6577,6 +6610,13 @@ __metadata:
   version: 3.0.0
   resolution: "shebang-regex@npm:3.0.0"
   checksum: 10c0/1dbed0726dd0e1152a92696c76c7f06084eb32a90f0528d11acd764043aacf76994b2fb30aa1291a21bd019d6699164d048286309a278855ee7bec06cf6fb690
+  languageName: node
+  linkType: hard
+
+"shell-escape@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "shell-escape@npm:0.2.0"
+  checksum: 10c0/501616713d13fd053b3858da18b613d83bfcdc8368e62be393dc563cc9fe2550492d403f73211e9a84429f39c8b9617f1e016dabee177b0ebdcb298fa47fc612
   languageName: node
   linkType: hard
 
@@ -7738,6 +7778,15 @@ __metadata:
   version: 3.25.76
   resolution: "zod@npm:3.25.76"
   checksum: 10c0/5718ec35e3c40b600316c5b4c5e4976f7fee68151bc8f8d90ec18a469be9571f072e1bbaace10f1e85cf8892ea12d90821b200e980ab46916a6166a4260a983c
+  languageName: node
+  linkType: hard
+
+"zx@npm:8.7.0":
+  version: 8.7.0
+  resolution: "zx@npm:8.7.0"
+  bin:
+    zx: build/cli.js
+  checksum: 10c0/0773448306ef0b5e2fb46723c29048b611781e987aeb89eb153e2ef07ff60cd16bae88666a9d272f4486fee09258ef30775d14dece3599f401dacad965fb30ef
   languageName: node
   linkType: hard
 
