@@ -1,7 +1,0 @@
-.idea
-node_modules
-*.log
-/lib
-.DS_Store
-/test/fixtures/ignored
-/test/fixtures/ignored-2
