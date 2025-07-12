@@ -13,24 +13,24 @@
 // limitations under the License.
 
 import assert from 'node:assert'
-import { test, describe, after } from 'node:test'
-import { Duplex } from 'node:stream'
-import { $, chalk, fs, path, tempfile, dotenv } from '../src/index.ts'
+import process from 'node:process'
+import { Duplex , Writable } from 'node:stream'
+import { test, after, describe } from 'node:test'
+
+import { $, fs, path, chalk, dotenv, tempfile } from '../src/index.ts'
 import {
   echo,
-  sleep,
   argv,
-  parseArgv,
-  updateArgv,
+  sleep,
   stdin,
-  spinner,
   fetch,
   retry,
+  spinner,
   question,
+  parseArgv,
+  updateArgv,
   expBackoff,
 } from '../src/goods.ts'
-import { Writable } from 'node:stream'
-import process from 'node:process'
 
 const __dirname = new URL('.', import.meta.url).pathname
 const root = path.resolve(__dirname, '..')
@@ -58,7 +58,7 @@ describe('goods', () => {
       }
       const input = new Input() as any
       const output = new Writable({
-        write: function (chunk, encoding, next) {
+        write (chunk, encoding, next) {
           contents += chunk.toString()
           next()
         },
@@ -216,7 +216,7 @@ describe('goods', () => {
       let contents = ''
       const { CI } = process.env
       const output = new Writable({
-        write: function (chunk, encoding, next) {
+        write (chunk, encoding, next) {
           contents += chunk.toString()
           next()
         },

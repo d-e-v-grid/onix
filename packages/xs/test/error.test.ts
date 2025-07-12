@@ -14,14 +14,15 @@
 
 import assert from 'node:assert'
 import { test, describe } from 'node:test'
+
 import {
   getErrnoMessage,
   getExitCodeInfo,
   getCallerLocation,
-  getCallerLocationFromString,
   formatExitMessage,
   formatErrorMessage,
   formatErrorDetails,
+  getCallerLocationFromString,
 } from '../src/error.ts'
 
 describe('error', () => {

@@ -12,16 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import 'zx/globals'
+
 import assert from 'node:assert'
 import { expectType } from 'tsd'
-import 'zx/globals'
 import { ParsedArgs } from 'minimist'
 
-let p = $`cmd`
+const p = $`cmd`
 assert(p instanceof ProcessPromise)
 expectType<ProcessPromise>(p)
 
-let o = await p
+const o = await p
 assert(o instanceof ProcessOutput)
 expectType<ProcessOutput>(o)
 

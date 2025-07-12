@@ -1,49 +1,49 @@
-# @onix-js/unified-exec
+# @onix-js/uxec
 
-Unified Execution Engine - 548=K9 8=B5@D59A 4;O 2K?>;=5=8O :><0=4 2 ;N1>< :>=B5:AB5 (;>:0;L=>, G5@57 SSH, 2 Docker :>=B59=5@0E).
+Unified Execution Engine - A powerful and flexible execution engine for various environments (local, remote SSH, Docker containers).
 
-## A>15==>AB8
+## Features
 
-- =€ **48=K9 API** - >48= 8=B5@D59A 4;O 2A5E B8?>2 2K?>;=5=8O
-- =Ý **Template Literals** - A8=B0:A8A 2 AB8;5 zx A 02B><0B8G5A:8< M:@0=8@>20=85<
-- = **>4C;L=0O 0@E8B5:BC@0** - 040?B5@K 4;O local, SSH, Docker
-- >ê **Mock 040?B5@** - 2AB@>5==0O ?>445@6:0 B5AB8@>20=8O
-- ¡ **>445@6:0 Bun** - 02B><0B8G5A:>5 >?@545;5=85 8 8A?>;L7>20=85 Bun.spawn
-- = **C; A>548=5=89** - MDD5:B82=>5 ?5@58A?>;L7>20=85 SSH A>548=5=89
-- =Ê **>B>:>20O >1@01>B:0** - @01>B0 A 1>;LH8<8 >1J5<0<8 40==KE
-- =á **57>?0A=>ABL** - 02B><0B8G5A:>5 M:@0=8@>20=85 8 A0=8B870F8O
+- **Unified API** - Single API for all execution environments
+- **Template Literals** - Native support for template literals like zx
+- **Multiple Adapters** - Support for local, SSH, Docker
+- **Mock Adapter** - Built-in support for testing
+- **Bun Support** - Native support for Bun.spawn execution
+- **SSH Connection Pooling** - Efficient SSH connection management
+- **Stream Handling** - Real-time output streaming
+- **TypeScript Support** - Full TypeScript support and type safety
 
-## #AB0=>2:0
+## Installation
 
 ```bash
-npm install @onix-js/unified-exec
+npm install @onix-js/uxec
 ```
 
-## KAB@K9 AB0@B
+## Quick Start
 
 ```typescript
-import { $ } from '@onix-js/unified-exec';
+import { $ } from '@onix-js/uxec';
 
-// @>AB>5 2K?>;=5=85 :><0=4K
+// Basic command execution
 const result = await $`echo "Hello, World!"`;
 console.log(result.stdout); // "Hello, World!"
 
-// =B5@?>;OF8O A 02B><0B8G5A:8< M:@0=8@>20=85<
+// Template literals with variables
 const filename = "my file.txt";
 await $`touch ${filename}`;
 
-// &5?>G:0 :>=D83C@0F88
+// Environment configuration
 const $prod = $.env({ NODE_ENV: 'production' }).cd('/app');
 await $prod.run`npm start`;
 
-// SSH 2K?>;=5=85
+// SSH execution
 const $remote = $.ssh({
   host: 'server.example.com',
   username: 'deploy'
 });
 await $remote.run`docker restart myapp`;
 
-// Docker 2K?>;=5=85
+// Docker execution
 const $docker = $.docker({
   container: 'webapp',
   workdir: '/app'
@@ -53,10 +53,10 @@ await $docker.run`npm run migrate`;
 
 ## API
 
-### !>740=85 4286:0
+### Engine Configuration
 
 ```typescript
-import { createExecutionEngine } from '@onix-js/unified-exec';
+import { createExecutionEngine } from '@onix-js/uxec';
 
 const $ = createExecutionEngine({
   defaultTimeout: 60000,
@@ -71,21 +71,21 @@ const $ = createExecutionEngine({
 });
 ```
 
-### 5B>4K :>=D83C@0F88
+### Chain Configuration
 
-- `$.with(config)` - A>740BL =>2K9 4286>: A 4>?>;=8B5;L=>9 :>=D83C@0F859
-- `$.cd(dir)` - 87<5=8BL @01>GCN 48@5:B>@8N
-- `$.env(vars)` - 4>1028BL ?5@5<5==K5 >:@C65=8O
-- `$.timeout(ms)` - CAB0=>28BL B09<0CB
-- `$.shell(shell)` - C:070BL shell 4;O 2K?>;=5=8O
+- `$.with(config)` - Create new instance with additional configuration
+- `$.cd(dir)` - Change working directory
+- `$.env(vars)` - Set environment variables
+- `$.timeout(ms)` - Set timeout
+- `$.shell(shell)` - Specify shell for execution
 
-### 40?B5@K
+### Adapters
 
-- `$.local()` - ;>:0;L=>5 2K?>;=5=85 (?> C<>;G0=8N)
-- `$.ssh(options)` - 2K?>;=5=85 G5@57 SSH
-- `$.docker(options)` - 2K?>;=5=85 2 Docker :>=B59=5@5
+- `$.local()` - Local execution (default)
+- `$.ssh(options)` - Remote SSH execution
+- `$.docker(options)` - Docker container execution
 
-### 1@01>B:0 >H81>:
+### Error Handling
 
 ```typescript
 try {
@@ -97,36 +97,36 @@ try {
   }
 }
 
-// ;8 157 2K1@>A0 8A:;NG5=89
+// Or disable throwing on non-zero exit
 const $noThrow = $.with({ throwOnNonZeroExit: false });
 const result = await $noThrow.run`exit 1`;
 console.log(result.exitCode); // 1
 ```
 
-## "5AB8@>20=85
+## Testing
 
-A?>;L7C9B5 MockAdapter 4;O B5AB8@>20=8O:
+Use MockAdapter for testing:
 
 ```typescript
-import { createExecutionEngine, MockAdapter } from '@onix-js/unified-exec';
+import { createExecutionEngine, MockAdapter } from '@onix-js/uxec';
 
 const $ = createExecutionEngine();
 const mock = new MockAdapter();
 $.registerAdapter('mock', mock);
 
-// 0AB@>9:0 <>:>2
+// Mock responses
 mock.mockSuccess('git pull', 'Already up to date.');
 mock.mockFailure('npm test', 'Tests failed!', 1);
 
-// A?>;L7>20=85
+// Execute with mock
 const $mock = $.with({ adapter: 'mock' });
 const result = await $mock.run`git pull`;
 
-// @>25@:8
+// Assertions
 mock.assertCommandExecuted('git pull');
 console.log(mock.getExecutedCommands());
 ```
 
-## 8F5=78O
+## License
 
 MIT

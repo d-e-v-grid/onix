@@ -13,6 +13,7 @@
 // limitations under the License.
 
 import { type Buffer } from 'node:buffer'
+
 import { bufToString } from './util.js'
 
 export function transformMarkdown(buf: Buffer | string): string {

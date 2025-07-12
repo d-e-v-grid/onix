@@ -124,7 +124,16 @@ export function combineStreams(stdout: Readable, stderr: Readable): Readable {
     read() {}
   });
 
-  function pipeStream(stream: Readable, prefix: string) {
+  let stdoutEnded = false;
+  let stderrEnded = false;
+
+  function checkEnd() {
+    if (stdoutEnded && stderrEnded) {
+      combined.push(null);
+    }
+  }
+
+  function pipeStream(stream: Readable, prefix: string, onEnd: () => void) {
     stream.on('data', (chunk) => {
       combined.push(`[${prefix}] ${chunk}`);
     });
@@ -134,14 +143,13 @@ export function combineStreams(stdout: Readable, stderr: Readable): Readable {
     });
 
     stream.on('end', () => {
-      if (!stdout.readable && !stderr.readable) {
-        combined.push(null);
-      }
+      onEnd();
+      checkEnd();
     });
   }
 
-  pipeStream(stdout, 'stdout');
-  pipeStream(stderr, 'stderr');
+  pipeStream(stdout, 'stdout', () => { stdoutEnded = true; });
+  pipeStream(stderr, 'stderr', () => { stderrEnded = true; });
 
   return combined;
 }

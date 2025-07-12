@@ -1,5 +1,5 @@
 import { platform } from 'node:os';
-import { it, expect, describe, beforeEach } from '@jest/globals';
+import { it, expect, describe } from '@jest/globals';
 
 import { escapeArg, interpolate, escapeCommand } from '../../../src/utils/shell-escape.js';
 

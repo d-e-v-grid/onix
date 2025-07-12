@@ -14,7 +14,8 @@
 
 import assert from 'node:assert'
 import { test, describe } from 'node:test'
-import { globby, fs, path } from '../build/index.js'
+
+import { fs, path, globby } from '../build/index.js'
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 

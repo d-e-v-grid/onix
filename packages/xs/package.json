@@ -103,6 +103,9 @@
     "test:smoke:deno": "deno test ./test/smoke/deno.test.js --allow-read --allow-sys --allow-env --allow-run",
     "test:workflow": "zizmor .github/workflows -v -p --min-severity=medium"
   },
+  "dependencies": {
+    "@onix-js/uxec": "workspace:*"
+  },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",

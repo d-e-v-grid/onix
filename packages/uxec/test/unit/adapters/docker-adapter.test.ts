@@ -1,9 +1,9 @@
-import { it, jest, expect, describe, beforeEach, afterEach, beforeAll, afterAll } from '@jest/globals';
 import { randomBytes } from 'node:crypto';
 import { spawn } from 'node:child_process';
+import { it, expect, describe, afterAll, afterEach, beforeAll, beforeEach } from '@jest/globals';
 
-import { DockerAdapter } from '../../../src/adapters/docker-adapter.js';
 import { DockerError } from '../../../src/core/error.js';
+import { DockerAdapter } from '../../../src/adapters/docker-adapter.js';
 
 const TEST_IMAGE = 'alpine:latest';
 const TEST_PREFIX = 'uxec-test-';
@@ -510,7 +510,7 @@ describe('DockerAdapter', () => {
       });
 
       // Container should exist (it will have a temp-uxec prefix, not our test prefix)
-      let containers = await adapterWithAutoRemove.listContainers();
+      const containers = await adapterWithAutoRemove.listContainers();
       const tempContainers = containers.filter(c => c.startsWith('temp-uxec-'));
       expect(tempContainers.length).toBeGreaterThan(0);
 

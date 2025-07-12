@@ -13,4 +13,5 @@
 // limitations under the License.
 
 import * as _ from './index.js'
+
 Object.assign(globalThis, _)

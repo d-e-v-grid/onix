@@ -12,13 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import assert from 'node:assert'
-import { test, describe, before, after } from 'node:test'
-import { fileURLToPath } from 'node:url'
 import net from 'node:net'
 import getPort from 'get-port'
-import { $, path, tmpfile, tmpdir, fs } from '../build/index.js'
+import assert from 'node:assert'
+import { fileURLToPath } from 'node:url'
+import { test, after, before, describe } from 'node:test'
+
 import { isMain, normalizeExt } from '../build/cli.js'
+import { $, fs, path, tmpdir, tmpfile } from '../build/index.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const spawn = $.spawn

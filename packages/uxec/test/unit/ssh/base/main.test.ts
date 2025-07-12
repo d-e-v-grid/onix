@@ -1,14 +1,14 @@
-import invariant from 'assert';
-import { describe, it, expect, beforeAll, afterAll } from '@jest/globals';
-import { exec } from 'node:child_process';
-import { readFileSync } from 'node:fs';
-import { join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { Server } from 'ssh2';
+import invariant from 'assert';
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { exec } from 'node:child_process';
+import { join, dirname } from 'node:path';
+import { it, expect, describe, afterAll, beforeAll } from '@jest/globals';
 
-import { NodeSSH } from '../../../../src/ssh/base.js';
-import { PRIVATE_KEY_PATH, exists, wait } from './helpers.js';
 import createServer from './ssh-server.js';
+import { NodeSSH } from '../../../../src/ssh/base.js';
+import { wait, exists, PRIVATE_KEY_PATH } from './helpers.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const __filename = fileURLToPath(import.meta.url);

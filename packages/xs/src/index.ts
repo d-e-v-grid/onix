@@ -12,12 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { ProcessPromise } from './core.js'
 import { fs } from './vendor.js'
+import { ProcessPromise } from './core.js'
 
 export * from './core.js'
 export * from './goods.js'
-export { minimist, dotenv, fs, YAML, glob, glob as globby } from './vendor.js'
+export { fs, YAML, glob, dotenv, minimist, glob as globby } from './vendor.js'
 
 export const VERSION: string =
   fs.readJsonSync(new URL('../package.json', import.meta.url), {
@@ -27,12 +27,12 @@ export const VERSION: string =
 export const version: string = VERSION
 
 export {
-  type Duration,
   quote,
-  quotePowerShell,
   tempdir,
-  tempdir as tmpdir,
   tempfile,
+  type Duration,
+  quotePowerShell,
+  tempdir as tmpdir,
   tempfile as tmpfile,
 } from './util.js'
 

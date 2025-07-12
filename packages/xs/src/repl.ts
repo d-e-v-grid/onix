@@ -14,11 +14,12 @@
 
 import os from 'node:os'
 import path from 'node:path'
-import process from 'node:process'
 import repl from 'node:repl'
+import process from 'node:process'
 import { inspect } from 'node:util'
-import { ProcessOutput, defaults } from './core.js'
+
 import { chalk } from './vendor-core.js'
+import { defaults, ProcessOutput } from './core.js'
 
 const HISTORY =
   process.env.ZX_REPL_HISTORY ?? path.join(os.homedir(), '.zx_repl_history')

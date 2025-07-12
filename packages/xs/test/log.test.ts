@@ -13,8 +13,9 @@
 // limitations under the License.
 
 import assert from 'node:assert'
-import { test, describe, beforeEach, before, after } from 'node:test'
-import { formatCmd, log } from '../src/log.ts'
+import { test, after, before, describe, beforeEach } from 'node:test'
+
+import { log, formatCmd } from '../src/log.ts'
 
 describe('log', () => {
   describe('log()', () => {

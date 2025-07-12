@@ -16,25 +16,26 @@
 
 import url from 'node:url'
 import process from 'node:process'
+
+import { randomId } from './util.js'
+import { startRepl } from './repl.js'
+import { transformMarkdown } from './md.js'
+import { parseDeps, installDeps } from './deps.js'
+import { createRequire, type minimist } from './vendor.js'
 import {
   $,
-  ProcessOutput,
-  parseArgv,
-  updateArgv,
-  resolveDefaults,
-  chalk,
-  dotenv,
-  fetch,
   fs,
   path,
+  chalk,
+  fetch,
   stdin,
+  dotenv,
   VERSION,
+  parseArgv,
+  updateArgv,
+  ProcessOutput,
+  resolveDefaults,
 } from './index.js'
-import { installDeps, parseDeps } from './deps.js'
-import { startRepl } from './repl.js'
-import { randomId } from './util.js'
-import { transformMarkdown } from './md.js'
-import { createRequire, type minimist } from './vendor.js'
 
 const EXT = '.mjs'
 const EXT_RE = /^\.[mc]?[jt]sx?$/

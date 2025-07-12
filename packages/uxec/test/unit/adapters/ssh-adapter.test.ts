@@ -1,8 +1,7 @@
-import { it, jest, expect, describe, beforeEach, afterEach } from '@jest/globals';
+import { it, jest, expect, describe, afterEach, beforeEach } from '@jest/globals';
 
-import { TimeoutError, ConnectionError } from '../../../src/core/error.js';
-import { createMockSSHOptions } from '../../helpers/mock-factories.js';
 import { SSHAdapter } from '../../../src/adapters/ssh-adapter.js';
+import { createMockSSHOptions } from '../../helpers/mock-factories.js';
 
 describe('SSHAdapter', () => {
   let adapter: SSHAdapter;

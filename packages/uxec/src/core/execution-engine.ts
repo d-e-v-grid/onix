@@ -39,12 +39,21 @@ export interface ProcessPromise extends Promise<ExecutionResult> {
   stdout: Readable;
   stderr: Readable;
   stdin: NodeJS.WritableStream;
-  pipe(target: ProcessPromise | ExecutionEngine): ProcessPromise;
+  pipe(target: ProcessPromise | ExecutionEngine | NodeJS.WritableStream | TemplateStringsArray, ...args: any[]): ProcessPromise;
   signal(signal: AbortSignal): ProcessPromise;
-  timeout(ms: number): ProcessPromise;
+  timeout(ms: number, timeoutSignal?: string): ProcessPromise;
   quiet(): ProcessPromise;
   nothrow(): ProcessPromise;
   interactive(): ProcessPromise;
+  kill(signal?: string): void;
+  // New methods for zx compatibility
+  text(): Promise<string>;
+  json<T = any>(): Promise<T>;
+  lines(): Promise<string[]>;
+  buffer(): Promise<Buffer>;
+  // Process-related properties
+  child?: any;
+  exitCode: Promise<number | null>;
 }
 
 export class ExecutionEngine {
@@ -207,13 +216,37 @@ export class ExecutionEngine {
     promise.stdin = stdin as any;
 
     // Add method chaining
-    promise.pipe = (target: ProcessPromise | ExecutionEngine): ProcessPromise => {
+    promise.pipe = (target: ProcessPromise | ExecutionEngine | NodeJS.WritableStream | TemplateStringsArray, ...args: any[]): ProcessPromise => {
       if (target instanceof ExecutionEngine) {
         return this.createProcessPromise({
           ...currentCommand,
           stdin: stdout as any
         });
       }
+      
+      if (Array.isArray(target)) {
+        // Handle template strings (piping to new command)
+        // Build command string from array parts
+        let command = '';
+        for (let i = 0; i < target.length; i++) {
+          command += target[i];
+          if (i < args.length) {
+            command += String(args[i]);
+          }
+        }
+        return this.createProcessPromise({
+          command,
+          shell: true,
+          stdin: stdout as any
+        });
+      }
+      
+      if (target && typeof (target as any).write === 'function') {
+        // Pipe to writable stream
+        promise.stdout.pipe(target as NodeJS.WritableStream);
+        return promise;
+      }
+      
       // For ProcessPromise targets, would need to implement proper piping
       throw new Error('Piping to ProcessPromise not yet implemented');
     };
@@ -223,8 +256,11 @@ export class ExecutionEngine {
       return promise;
     };
 
-    promise.timeout = (ms: number): ProcessPromise => {
+    promise.timeout = (ms: number, timeoutSignal?: string): ProcessPromise => {
       currentCommand.timeout = ms;
+      if (timeoutSignal) {
+        currentCommand.timeoutSignal = timeoutSignal;
+      }
       return promise;
     };
 
@@ -244,6 +280,47 @@ export class ExecutionEngine {
       currentCommand.stdin = process.stdin as any;
       return promise;
     };
+
+    // Add zx-compatible methods
+    promise.text = async (): Promise<string> => {
+      const result = await promise;
+      return result.stdout.trim();
+    };
+
+    promise.json = async <T = any>(): Promise<T> => {
+      const text = await promise.text();
+      try {
+        return JSON.parse(text);
+      } catch (error) {
+        throw new Error(`Failed to parse JSON: ${error instanceof Error ? error.message : String(error)}\nOutput: ${text}`);
+      }
+    };
+
+    promise.lines = async (): Promise<string[]> => {
+      const result = await promise;
+      return result.stdout.split('\n').filter(line => line.length > 0);
+    };
+
+    promise.buffer = async (): Promise<Buffer> => {
+      const result = await promise;
+      return Buffer.from(result.stdout);
+    };
+
+    promise.kill = (signal = 'SIGTERM'): void => {
+      if (currentCommand.signal && typeof currentCommand.signal.dispatchEvent === 'function') {
+        // Trigger abort event on the signal
+        const event = new Event('abort');
+        currentCommand.signal.dispatchEvent(event);
+      }
+      // Additional kill logic would depend on the adapter implementation
+    };
+
+    // Add process-related properties
+    promise.child = undefined; // Will be set by adapter if available
+    
+    Object.defineProperty(promise, 'exitCode', {
+      get: () => promise.then(result => result.exitCode)
+    });
 
     return promise;
   }

@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import assert from 'node:assert'
-import { test, describe, after } from 'node:test'
 import '../build/globals.js'
+
+import assert from 'node:assert'
+import { test, after, describe } from 'node:test'
+
 import * as index from '../build/index.js'
 
 describe('global', () => {

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 import { expectType } from 'tsd'
-import { $, echo, sleep, spinner, retry, expBackoff } from 'zx'
+import { $, echo, sleep, retry, spinner, expBackoff } from 'zx'
 
 echo`Date is ${await $`date`}`
 echo('Hello, world!')
@@ -21,7 +21,7 @@ echo('Hello, world!')
 await sleep('1s')
 await sleep(1000)
 
-expectType<'foo'>(await spinner(() => 'foo' as 'foo'))
-expectType<'bar'>(await spinner('title', () => 'bar' as 'bar'))
-expectType<'foo'>(await retry(0, () => 'foo' as 'foo'))
+expectType<'foo'>(await spinner(() => 'foo' as const))
+expectType<'bar'>(await spinner('title', () => 'bar' as const))
+expectType<'foo'>(await retry(0, () => 'foo' as const))
 expectType<Generator<number, void, unknown>>(expBackoff())

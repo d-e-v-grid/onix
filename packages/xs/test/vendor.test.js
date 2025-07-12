@@ -14,11 +14,12 @@
 
 import assert from 'node:assert'
 import { test, describe } from 'node:test'
+
 import {
   YAML,
-  minimist,
-  which,
   glob,
+  which,
+  minimist,
   nodeFetch as fetch,
 } from '../build/vendor.js'
 

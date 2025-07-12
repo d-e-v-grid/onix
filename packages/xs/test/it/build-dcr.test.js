@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { $ } from '../../build/index.js'
-import { describe, test } from 'node:test'
 import assert from 'node:assert'
+import { test, describe } from 'node:test'
+
+import { $ } from '../../build/index.js'
 
 describe('docker container', () => {
   test('works', async () => {

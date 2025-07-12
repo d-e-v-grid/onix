@@ -14,8 +14,9 @@
 
 import assert from 'node:assert'
 import { test, describe } from 'node:test'
-import * as core from '../build/core.js'
+
 import * as cli from '../build/cli.js'
+import * as core from '../build/core.js'
 import * as index from '../build/index.js'
 import * as vendor from '../build/vendor.js'
 

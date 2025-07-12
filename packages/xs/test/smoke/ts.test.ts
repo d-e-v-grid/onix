@@ -12,9 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import * as assert from 'node:assert'
 import 'zx/globals'
-;(async () => {
+;
+
+import * as assert from 'node:assert';
+
+(async () => {
   // smoke test async
   {
     const p = await $`echo foo`

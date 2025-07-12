@@ -1,7 +1,7 @@
 import { Command } from '../core/command.js';
-import { AdapterError, CommandError, TimeoutError } from '../core/error.js';
 import { ExecutionResult } from '../core/result.js';
 import { BaseAdapter, BaseAdapterConfig } from './base-adapter.js';
+import { AdapterError, CommandError, TimeoutError } from '../core/error.js';
 
 export interface MockResponse {
   stdout?: string;

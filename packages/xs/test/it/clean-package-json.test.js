@@ -13,8 +13,9 @@
 // limitations under the License.
 
 import assert from 'node:assert'
-import { tempdir, $, path, fs } from '../../build/index.js'
-import { describe, before, after, it } from 'node:test'
+import { it, after, before, describe } from 'node:test'
+
+import { $, fs, path, tempdir } from '../../build/index.js'
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
 const root = path.resolve(__dirname, '../../')

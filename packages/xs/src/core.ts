@@ -12,64 +12,65 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import {
-  type ChildProcess,
-  type IOType,
-  type StdioOptions,
-  spawn,
-  spawnSync,
-} from 'node:child_process'
-import { type Encoding } from 'node:crypto'
-import { type AsyncHook, AsyncLocalStorage, createHook } from 'node:async_hooks'
-import { type Readable, type Writable } from 'node:stream'
 import fs from 'node:fs'
+import process from 'node:process'
 import { inspect } from 'node:util'
+import { Buffer } from 'node:buffer'
 import { EOL as _EOL } from 'node:os'
 import { EventEmitter } from 'node:events'
-import { Buffer } from 'node:buffer'
-import process from 'node:process'
+import { type Encoding } from 'node:crypto'
+import { type Readable, type Writable } from 'node:stream'
+import { createHook, type AsyncHook, AsyncLocalStorage } from 'node:async_hooks'
 import {
-  formatErrorDetails,
-  formatErrorMessage,
+  spawn,
+  spawnSync,
+  type IOType,
+  type ChildProcess,
+  type StdioOptions,
+} from 'node:child_process'
+
+import { log } from './log.js'
+import {
+  getExitCodeInfo,
   formatExitMessage,
   getCallerLocation,
-  getExitCodeInfo,
+  formatErrorDetails,
+  formatErrorMessage,
 } from './error.js'
 import {
+  ps,
   exec,
-  buildCmd,
   chalk,
   which,
-  ps,
+  buildCmd,
   VoidStream,
   type TSpawnStore,
   type TSpawnResult,
 } from './vendor-core.js'
 import {
-  type Duration,
-  isString,
-  isStringLiteral,
-  getLast,
-  getLines,
   noop,
   once,
-  parseBool,
-  parseDuration,
-  preferLocalBin,
-  proxyOverride,
   quote,
-  quotePowerShell,
-  toCamelCase,
+  getLast,
+  isString,
+  getLines,
   randomId,
+  parseBool,
   bufArrJoin,
+  toCamelCase,
+  type Duration,
+  parseDuration,
+  proxyOverride,
+  preferLocalBin,
+  isStringLiteral,
+  quotePowerShell,
 } from './util.js'
-import { log } from './log.js'
 
-export { default as path } from 'node:path'
 export * as os from 'node:os'
+export { default as path } from 'node:path'
 export { log, type LogEntry } from './log.js'
-export { chalk, which, ps } from './vendor-core.js'
 export { quote, quotePowerShell } from './util.js'
+export { ps, chalk, which } from './vendor-core.js'
 
 const CWD = Symbol('processCwd')
 const SYNC = Symbol('syncExec')

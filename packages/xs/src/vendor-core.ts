@@ -15,24 +15,25 @@
 import { default as _chalk } from 'chalk'
 import { default as _which } from 'which'
 import { default as _ps } from '@webpod/ps'
+
 import { bus } from './internals.js'
 
-export {
-  type TSpawnStore,
-  type TSpawnStoreChunks,
-  type TSpawnResult,
-  exec,
-  buildCmd,
-  isStringLiteral,
-  VoidStream,
-} from 'zurk/spawn'
+export { type ChalkInstance } from 'chalk'
 
 export type RequestInfo = Parameters<typeof globalThis.fetch>[0]
 export type RequestInit = Parameters<typeof globalThis.fetch>[1] & {
   signal?: AbortSignal
 }
 
-export { type ChalkInstance } from 'chalk'
+export {
+  exec,
+  buildCmd,
+  VoidStream,
+  isStringLiteral,
+  type TSpawnStore,
+  type TSpawnResult,
+  type TSpawnStoreChunks,
+} from 'zurk/spawn'
 export const chalk: typeof _chalk = bus.wrap('chalk', _chalk)
 export const which: typeof _which = bus.wrap('which', _which)
 export const ps: typeof _ps = bus.wrap('ps', _ps)

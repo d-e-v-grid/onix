@@ -1,5 +1,5 @@
-import { createRequire } from 'node:module'
 import * as process from 'node:process'
+import { createRequire } from 'node:module'
 
 // prettier-ignore
 if (globalThis.Deno) {

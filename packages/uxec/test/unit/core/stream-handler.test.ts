@@ -43,11 +43,13 @@ describe('StreamHandler', () => {
       
       transform.on('data', (chunk) => output.push(chunk));
       
-      await new Promise<void>((resolve, reject) => {
-        transform.on('end', resolve);
-        transform.on('error', reject);
-        transform.write(Buffer.from(input));
-        transform.end();
+      // Write and end synchronously
+      transform.write(Buffer.from(input));
+      transform.end();
+      
+      // Wait for finish event instead of end
+      await new Promise<void>((resolve) => {
+        transform.on('finish', resolve);
       });
       
       expect(handler.getContent()).toBe(input);
@@ -60,12 +62,13 @@ describe('StreamHandler', () => {
       
       const chunks = ['Hello', ', ', 'World', '!'];
       
-      await new Promise<void>((resolve, reject) => {
-        transform.on('end', resolve);
-        transform.on('error', reject);
-        
-        chunks.forEach(chunk => transform.write(Buffer.from(chunk)));
-        transform.end();
+      // Write chunks and end
+      chunks.forEach(chunk => transform.write(Buffer.from(chunk)));
+      transform.end();
+      
+      // Wait for finish
+      await new Promise<void>((resolve) => {
+        transform.on('finish', resolve);
       });
       
       expect(handler.getContent()).toBe('Hello, World!');
@@ -76,12 +79,13 @@ describe('StreamHandler', () => {
       const handler = new StreamHandler({ onData });
       const transform = handler.createTransform();
       
-      await new Promise<void>((resolve, reject) => {
-        transform.on('end', resolve);
-        transform.on('error', reject);
-        
-        transform.write(Buffer.from('Test data'));
-        transform.end();
+      // Write and end
+      transform.write(Buffer.from('Test data'));
+      transform.end();
+      
+      // Wait for finish
+      await new Promise<void>((resolve) => {
+        transform.on('finish', resolve);
       });
       
       expect(onData).toHaveBeenCalledWith('Test data');
@@ -97,21 +101,23 @@ describe('StreamHandler', () => {
         
         // Try to write more than maxBuffer
         transform.write(Buffer.from('This is a very long string'));
+        transform.end();
       })).rejects.toThrow('Stream exceeded maximum buffer size of 10 bytes');
     });
     
     it('should handle different encodings', async () => {
-      const handler = new StreamHandler({ encoding: 'base64' });
+      const handler = new StreamHandler({ encoding: 'utf16le' });
       const transform = handler.createTransform();
       
-      const input = Buffer.from('Hello').toString('base64');
+      const input = Buffer.from('Hello', 'utf16le');
       
-      await new Promise<void>((resolve, reject) => {
-        transform.on('end', resolve);
-        transform.on('error', reject);
-        
-        transform.write(Buffer.from(input, 'base64'));
-        transform.end();
+      // Write and end
+      transform.write(input);
+      transform.end();
+      
+      // Wait for finish
+      await new Promise<void>((resolve) => {
+        transform.on('finish', resolve);
       });
       
       expect(handler.getContent()).toBe('Hello');
@@ -123,10 +129,13 @@ describe('StreamHandler', () => {
       const handler = new StreamHandler();
       const transform = handler.createTransform();
       
+      // Write and end
+      transform.write(Buffer.from('Test content'));
+      transform.end();
+      
+      // Wait for finish
       await new Promise<void>((resolve) => {
-        transform.on('end', resolve);
-        transform.write(Buffer.from('Test content'));
-        transform.end();
+        transform.on('finish', resolve);
       });
       
       expect(handler.getContent()).toBe('Test content');
@@ -138,10 +147,13 @@ describe('StreamHandler', () => {
       
       const input = Buffer.from('Binary data');
       
+      // Write and end
+      transform.write(input);
+      transform.end();
+      
+      // Wait for finish
       await new Promise<void>((resolve) => {
-        transform.on('end', resolve);
-        transform.write(input);
-        transform.end();
+        transform.on('finish', resolve);
       });
       
       const buffer = handler.getBuffer();
@@ -155,10 +167,13 @@ describe('StreamHandler', () => {
       const handler = new StreamHandler();
       const transform = handler.createTransform();
       
+      // Write and end
+      transform.write(Buffer.from('Some data'));
+      transform.end();
+      
+      // Wait for finish
       await new Promise<void>((resolve) => {
-        transform.on('end', resolve);
-        transform.write(Buffer.from('Some data'));
-        transform.end();
+        transform.on('finish', resolve);
       });
       
       expect(handler.getContent()).toBe('Some data');
@@ -176,10 +191,11 @@ describe('createLineTransform', () => {
     const lines: string[] = [];
     const transform = createLineTransform((line) => lines.push(line));
     
+    transform.write('Line 1\nLine 2\nLine 3\n');
+    transform.end();
+    
     await new Promise<void>((resolve) => {
-      transform.on('end', resolve);
-      transform.write('Line 1\nLine 2\nLine 3\n');
-      transform.end();
+      transform.on('finish', resolve);
     });
     
     expect(lines).toEqual(['Line 1', 'Line 2', 'Line 3']);
@@ -189,11 +205,12 @@ describe('createLineTransform', () => {
     const lines: string[] = [];
     const transform = createLineTransform((line) => lines.push(line));
     
+    transform.write('Line 1\nLine ');
+    transform.write('2\nLine 3');
+    transform.end();
+    
     await new Promise<void>((resolve) => {
-      transform.on('end', resolve);
-      transform.write('Line 1\nLine ');
-      transform.write('2\nLine 3');
-      transform.end();
+      transform.on('finish', resolve);
     });
     
     expect(lines).toEqual(['Line 1', 'Line 2', 'Line 3']);
@@ -203,10 +220,11 @@ describe('createLineTransform', () => {
     const lines: string[] = [];
     const transform = createLineTransform((line) => lines.push(line));
     
+    transform.write('Line 1\n\nLine 3\n');
+    transform.end();
+    
     await new Promise<void>((resolve) => {
-      transform.on('end', resolve);
-      transform.write('Line 1\n\nLine 3\n');
-      transform.end();
+      transform.on('finish', resolve);
     });
     
     expect(lines).toEqual(['Line 1', '', 'Line 3']);
@@ -221,10 +239,11 @@ describe('createLineTransform', () => {
     
     const input = 'Test\nData';
     
+    transform.write(input);
+    transform.end();
+    
     await new Promise<void>((resolve) => {
-      transform.on('end', resolve);
-      transform.write(input);
-      transform.end();
+      transform.on('finish', resolve);
     });
     
     expect(Buffer.concat(output).toString()).toBe(input);
@@ -268,21 +287,8 @@ describe('streamToString', () => {
 
 describe('combineStreams', () => {
   it('should combine stdout and stderr with prefixes', async () => {
-    const stdout = new Readable({
-      read() {
-        this.push('Output line 1\n');
-        this.push('Output line 2\n');
-        this.push(null);
-      }
-    });
-    
-    const stderr = new Readable({
-      read() {
-        this.push('Error line 1\n');
-        this.push('Error line 2\n');
-        this.push(null);
-      }
-    });
+    const stdout = Readable.from(['Output line 1\n', 'Output line 2\n']);
+    const stderr = Readable.from(['Error line 1\n', 'Error line 2\n']);
     
     const combined = combineStreams(stdout, stderr);
     const chunks: string[] = [];
@@ -302,15 +308,14 @@ describe('combineStreams', () => {
   
   it('should handle stream errors', async () => {
     const stdout = new Readable({
-      read() {
-        this.destroy(new Error('Read error'));
-      }
+      read() {}
     });
     
-    const stderr = new Readable({
-      read() {
-        this.push(null);
-      }
+    const stderr = Readable.from([]);
+    
+    // Destroy stdout after creation
+    setImmediate(() => {
+      stdout.destroy(new Error('Read error'));
     });
     
     const combined = combineStreams(stdout, stderr);
@@ -322,28 +327,19 @@ describe('combineStreams', () => {
   });
   
   it('should end when both streams end', async () => {
-    const stdout = new Readable({
-      read() {
-        this.push('stdout data');
-        this.push(null);
-      }
-    });
-    
-    const stderr = new Readable({
-      read() {
-        this.push('stderr data');
-        this.push(null);
-      }
-    });
+    const stdout = Readable.from(['stdout data']);
+    const stderr = Readable.from(['stderr data']);
     
     const combined = combineStreams(stdout, stderr);
-    let ended = false;
+    const chunks: string[] = [];
     
-    combined.on('end', () => { ended = true; });
+    await new Promise<void>((resolve) => {
+      combined.on('data', (chunk) => chunks.push(chunk.toString()));
+      combined.on('end', resolve);
+    });
     
-    // Wait a bit to ensure streams process
-    await new Promise(resolve => setTimeout(resolve, 100));
-    
-    expect(ended).toBe(true);
+    const output = chunks.join('');
+    expect(output).toContain('[stdout] stdout data');
+    expect(output).toContain('[stderr] stderr data');
   });
 });

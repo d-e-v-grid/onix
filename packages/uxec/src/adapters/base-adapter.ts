@@ -32,6 +32,9 @@ export abstract class BaseAdapter {
   abstract execute(command: Command): Promise<ExecutionResult>;
   
   abstract isAvailable(): Promise<boolean>;
+  
+  // Synchronous execution (optional - adapters can implement if they support it)
+  executeSync?(command: Command): ExecutionResult;
 
   protected mergeCommand(command: Command): Command {
     return {

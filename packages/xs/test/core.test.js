@@ -13,39 +13,40 @@
 // limitations under the License.
 
 import assert from 'node:assert'
-import { test, describe, before, after, it } from 'node:test'
+import { Socket } from 'node:net'
 import { inspect } from 'node:util'
 import { basename } from 'node:path'
 import { WriteStream } from 'node:fs'
-import { Readable, Transform, Writable } from 'node:stream'
-import { Socket } from 'node:net'
 import { ChildProcess } from 'node:child_process'
+import { Readable, Writable, Transform } from 'node:stream'
+import { it, test, after, before, describe } from 'node:test'
+
+import { noop } from '../build/util.js'
 import {
-  $,
-  ProcessPromise,
-  ProcessOutput,
-  defaults,
-  resolveDefaults,
-  cd,
-  syncProcessCwd,
-  within,
-  usePowerShell,
-  usePwsh,
-  useBash,
-} from '../build/core.js'
-import {
-  tempfile,
-  tempdir,
   fs,
   quote,
-  quotePowerShell,
   sleep,
   quiet,
   which,
-  nothrow,
   fetch,
+  tempdir,
+  nothrow,
+  tempfile,
+  quotePowerShell,
 } from '../build/index.js'
-import { noop } from '../build/util.js'
+import {
+  $,
+  cd,
+  within,
+  usePwsh,
+  useBash,
+  defaults,
+  ProcessOutput,
+  usePowerShell,
+  ProcessPromise,
+  syncProcessCwd,
+  resolveDefaults,
+} from '../build/core.js'
 
 describe('core', () => {
   describe('resolveDefaults()', () => {
@@ -599,7 +600,7 @@ describe('core', () => {
       test('accepts Writable', async () => {
         let contents = ''
         const stream = new Writable({
-          write: function (chunk, encoding, next) {
+          write (chunk, encoding, next) {
             contents += chunk.toString()
             next()
           },

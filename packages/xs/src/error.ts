@@ -203,12 +203,10 @@ export const formatExitMessage = (
 export const formatErrorMessage = (
   err: NodeJS.ErrnoException,
   from: string
-): string => {
-  return `${err.message}
+): string => `${err.message}
     errno: ${err.errno} (${getErrnoMessage(err.errno)})
     code: ${err.code}
     at ${from}`
-}
 
 export function getCallerLocation(err = new Error('zx error')): string {
   return getCallerLocationFromString(err.stack)

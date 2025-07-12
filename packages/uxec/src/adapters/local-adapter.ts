@@ -1,6 +1,6 @@
 import { platform } from 'node:os';
 import { Readable } from 'node:stream';
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 
 import { Command } from '../core/command.js';
 import { ExecutionResult } from '../core/result.js';
@@ -70,6 +70,44 @@ export class LocalAdapter extends BaseAdapter {
       throw new AdapterError(
         this.adapterName, 
         'execute', 
+        error instanceof Error ? error : new Error(String(error))
+      );
+    }
+  }
+
+  override executeSync(command: Command): ExecutionResult {
+    const mergedCommand = this.mergeCommand(command);
+    const startTime = Date.now();
+
+    try {
+      const implementation = this.getImplementation();
+      
+      let result: ProcessResult;
+      if (implementation === 'bun' && RuntimeDetector.isBun()) {
+        result = this.executeBunSync(mergedCommand);
+      } else {
+        result = this.executeNodeSync(mergedCommand);
+      }
+
+      const endTime = Date.now();
+      
+      return this.createResult(
+        result.stdout,
+        result.stderr,
+        result.exitCode ?? 0,
+        result.signal ?? undefined,
+        this.buildCommandString(mergedCommand),
+        startTime,
+        endTime
+      );
+    } catch (error) {
+      if (error instanceof CommandError || error instanceof AdapterError) {
+        throw error;
+      }
+      
+      throw new AdapterError(
+        this.adapterName, 
+        'executeSync', 
         error instanceof Error ? error : new Error(String(error))
       );
     }
@@ -276,5 +314,42 @@ export class LocalAdapter extends BaseAdapter {
     } finally {
       reader.releaseLock();
     }
+  }
+
+  private executeNodeSync(command: Command): ProcessResult {
+    const spawnOptions = this.buildNodeSpawnOptions(command);
+    
+    // Add encoding for sync execution
+    spawnOptions.encoding = this.config.encoding;
+    
+    const result = spawnSync(command.command, command.args || [], spawnOptions);
+    
+    return {
+      stdout: result.stdout?.toString() || '',
+      stderr: result.stderr?.toString() || '',
+      exitCode: result.status,
+      signal: result.signal
+    };
+  }
+
+  private executeBunSync(command: Command): ProcessResult {
+    // @ts-ignore - Bun global
+    const proc = Bun.spawnSync({
+      cmd: [command.command, ...(command.args || [])],
+      cwd: command.cwd,
+      env: this.createCombinedEnv(this.config.defaultEnv, command.env),
+      stdin: command.stdin && (typeof command.stdin === 'string' || Buffer.isBuffer(command.stdin))
+        ? command.stdin
+        : undefined,
+      stdout: command.stdout === 'pipe' ? 'pipe' : command.stdout,
+      stderr: command.stderr === 'pipe' ? 'pipe' : command.stderr
+    });
+
+    return {
+      stdout: proc.stdout ? new TextDecoder().decode(proc.stdout) : '',
+      stderr: proc.stderr ? new TextDecoder().decode(proc.stderr) : '',
+      exitCode: proc.exitCode,
+      signal: null
+    };
   }
 }

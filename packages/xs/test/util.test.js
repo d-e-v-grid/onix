@@ -12,24 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import assert from 'node:assert'
 import fs from 'node:fs'
+import assert from 'node:assert'
 import { test, describe } from 'node:test'
+
 import {
-  isString,
-  isStringLiteral,
   noop,
-  parseDuration,
-  parseBool,
   quote,
-  quotePowerShell,
-  randomId,
   // normalizeMultilinePieces,
   tempdir,
-  tempfile,
-  preferLocalBin,
-  toCamelCase,
   getLast,
+  isString,
+  randomId,
+  tempfile,
+  parseBool,
+  toCamelCase,
+  parseDuration,
+  preferLocalBin,
+  isStringLiteral,
+  quotePowerShell,
 } from '../build/util.js'
 
 describe('util', () => {

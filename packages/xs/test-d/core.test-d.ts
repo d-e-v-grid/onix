@@ -13,11 +13,11 @@
 // limitations under the License.
 
 import assert from 'node:assert'
+import { expectType, expectError } from 'tsd'
 import { Readable, Writable } from 'node:stream'
-import { expectError, expectType } from 'tsd'
-import { $, ProcessPromise, ProcessOutput, within } from 'zx'
+import { $, within, ProcessOutput, ProcessPromise } from 'zx'
 
-let p = $`cmd`
+const p = $`cmd`
 assert(p instanceof ProcessPromise)
 expectType<ProcessPromise>(p)
 expectType<Writable>(p.stdin)
@@ -38,7 +38,7 @@ expectType<Promise<ProcessOutput>>(p.then((p) => p))
 expectType<Promise<ProcessOutput>>(p.catch((p) => p))
 expectType<Promise<any>>(p.then((p) => p).catch((p) => p))
 
-let o = await p
+const o = await p
 assert(o instanceof ProcessOutput)
 expectType<ProcessOutput>(o)
 expectType<string>(o.stdout)

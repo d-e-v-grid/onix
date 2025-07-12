@@ -12,26 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import * as _yaml from 'yaml'
 import { URL } from 'node:url'
+import * as _fs from 'fs-extra'
+import _createRequire from 'create-require'
+import { default as _dotenv } from 'envapi'
+import { default as _minimist } from 'minimist'
+import { depseekSync as _depseek } from 'depseek'
+import { AbortController, fetch as _nodeFetch } from 'node-fetch-native'
 import {
-  convertPathToPattern,
   globby,
   globbySync,
   globbyStream,
-  generateGlobTasksSync,
-  generateGlobTasks,
-  isGitIgnoredSync,
   isGitIgnored,
+  isGitIgnoredSync,
   isDynamicPattern,
+  generateGlobTasks,
+  convertPathToPattern,
+  generateGlobTasksSync,
   type Options as GlobbyOptions,
 } from 'globby'
-import * as _yaml from 'yaml'
-import * as _fs from 'fs-extra'
-import _createRequire from 'create-require'
-import { fetch as _nodeFetch, AbortController } from 'node-fetch-native'
-import { depseekSync as _depseek } from 'depseek'
-import { default as _minimist } from 'minimist'
-import { default as _dotenv } from 'envapi'
 
 import { bus } from './internals.js'
 

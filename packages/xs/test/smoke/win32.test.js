@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import assert from 'node:assert'
-import { test, describe } from 'node:test'
-import process from 'node:process'
 import '../../build/globals.js'
+
+import assert from 'node:assert'
+import process from 'node:process'
+import { test, describe } from 'node:test'
 
 const _describe = process.platform === 'win32' ? describe : describe.skip
 

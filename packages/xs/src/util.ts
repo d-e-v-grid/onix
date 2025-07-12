@@ -14,9 +14,10 @@
 
 import os from 'node:os'
 import path from 'node:path'
+import process from 'node:process'
 import fs, { type Mode } from 'node:fs'
 import { type Buffer } from 'node:buffer'
-import process from 'node:process'
+
 import { type TSpawnStoreChunks } from './vendor-core.js'
 
 export { isStringLiteral } from './vendor-core.js'

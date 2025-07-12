@@ -12,10 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { chalk, type RequestInfo, type RequestInit } from './vendor-core.js'
+import process from 'node:process'
 import { inspect } from 'node:util'
 import { type Buffer } from 'node:buffer'
-import process from 'node:process'
+
+import { chalk, type RequestInfo, type RequestInit } from './vendor-core.js'
 
 export type LogEntry = {
   verbose?: boolean

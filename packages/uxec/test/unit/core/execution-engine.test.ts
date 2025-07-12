@@ -1,8 +1,8 @@
 import { it, jest, expect, describe, beforeEach } from '@jest/globals';
-import { ExecutionEngine } from '../../../src/core/execution-engine.js';
+
+import { CommandError } from '../../../src/core/error.js';
 import { MockAdapter } from '../../../src/adapters/mock-adapter.js';
-import { createMockExecutionResult } from '../../helpers/mock-factories.js';
-import { TimeoutError, CommandError } from '../../../src/core/error.js';
+import { ExecutionEngine } from '../../../src/core/execution-engine.js';
 
 describe('ExecutionEngine', () => {
   let engine: ExecutionEngine;

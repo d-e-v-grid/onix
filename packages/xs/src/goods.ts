@@ -12,26 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { Buffer } from 'node:buffer'
 import process from 'node:process'
-import { createInterface } from 'node:readline'
+import { Buffer } from 'node:buffer'
 import { Readable } from 'node:stream'
+import { createInterface } from 'node:readline'
+
 import { $, within, ProcessOutput, type ProcessPromise } from './core.js'
 import {
-  type Duration,
-  getLast,
-  identity,
-  isStringLiteral,
-  parseBool,
-  parseDuration,
-  toCamelCase,
-} from './util.js'
-import {
+  minimist,
+  nodeFetch,
   type RequestInfo,
   type RequestInit,
-  nodeFetch,
-  minimist,
 } from './vendor.js'
+import {
+  getLast,
+  identity,
+  parseBool,
+  toCamelCase,
+  type Duration,
+  parseDuration,
+  isStringLiteral,
+} from './util.js'
 
 type ArgvOpts = minimist.Opts & { camelCase?: boolean; parseBoolean?: boolean }
 

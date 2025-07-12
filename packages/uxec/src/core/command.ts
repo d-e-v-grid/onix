@@ -38,6 +38,7 @@ export interface Command {
   cwd?: string;                         // Рабочая директория
   env?: Record<string, string>;         // Переменные окружения
   timeout?: number;                     // Таймаут выполнения
+  timeoutSignal?: string;               // Сигнал для отправки при таймауте
   
   // Управление потоками
   stdin?: string | Buffer | Readable;   // Входные данные

@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-import { assert } from 'https://deno.land/std@0.224.0/assert/assert.ts'
-import { $ } from '../../build/index.js'
 import '../../build/cli.js'
+
+import { assert } from 'https://deno.land/std@0.224.0/assert/assert.ts'
+
+import { $ } from '../../build/index.js'
 
 Deno.test('deno smoke test', async () => {
   // smoke test

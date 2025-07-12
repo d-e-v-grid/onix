@@ -12,10 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+import '../../build/cli.js'
+
 import assert from 'node:assert'
 import { test, describe } from 'bun:test'
+
 import { $, within, tmpdir } from '../../build/index.js'
-import '../../build/cli.js'
 
 describe('bun', () => {
   test('smoke test', async () => {
