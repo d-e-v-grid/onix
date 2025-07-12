@@ -16,7 +16,7 @@ import { Buffer } from 'node:buffer'
 import process from 'node:process'
 import { createInterface } from 'node:readline'
 import { Readable } from 'node:stream'
-import { $, within, ProcessOutput, type ProcessPromise } from './core.ts'
+import { $, within, ProcessOutput, type ProcessPromise } from './core.js'
 import {
   type Duration,
   getLast,
@@ -25,13 +25,13 @@ import {
   parseBool,
   parseDuration,
   toCamelCase,
-} from './util.ts'
+} from './util.js'
 import {
   type RequestInfo,
   type RequestInit,
   nodeFetch,
   minimist,
-} from './vendor.ts'
+} from './vendor.js'
 
 type ArgvOpts = minimist.Opts & { camelCase?: boolean; parseBoolean?: boolean }
 
@@ -95,9 +95,9 @@ export function fetch(
       const rs = new Readable()
       const _dest = isStringLiteral(dest, ...args)
         ? $({
-            halt: true,
-            signal: init?.signal as AbortSignal,
-          })(dest as TemplateStringsArray, ...args)
+          halt: true,
+          signal: init?.signal as AbortSignal,
+        })(dest as TemplateStringsArray, ...args)
         : dest
       p.then(
         (r) => responseToReadable(r, rs).pipe(_dest.run?.()),
@@ -184,8 +184,8 @@ export async function retry<T>(
     typeof d === 'object'
       ? d
       : (function* (d) {
-          while (true) yield d
-        })(parseDuration(d))
+        while (true) yield d
+      })(parseDuration(d))
 
   let attempt = 0
   let lastErr: unknown

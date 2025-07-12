@@ -17,8 +17,8 @@ import path from 'node:path'
 import process from 'node:process'
 import repl from 'node:repl'
 import { inspect } from 'node:util'
-import { ProcessOutput, defaults } from './core.ts'
-import { chalk } from './vendor-core.ts'
+import { ProcessOutput, defaults } from './core.js'
+import { chalk } from './vendor-core.js'
 
 const HISTORY =
   process.env.ZX_REPL_HISTORY ?? path.join(os.homedir(), '.zx_repl_history')
@@ -35,5 +35,5 @@ export async function startRepl(history = HISTORY) {
         : inspect(output, { colors: true })
     },
   })
-  r.setupHistory(history, () => {})
+  r.setupHistory(history, () => { })
 }

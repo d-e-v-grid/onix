@@ -13,8 +13,8 @@
 // limitations under the License.
 
 import { builtinModules } from 'node:module'
-import { $, spinner } from './index.ts'
-import { depseek } from './vendor.ts'
+import { $, spinner } from './index.js'
+import { depseek } from './vendor.js'
 
 /**
  * Install npm dependencies

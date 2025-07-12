@@ -15,7 +15,7 @@
 import { default as _chalk } from 'chalk'
 import { default as _which } from 'which'
 import { default as _ps } from '@webpod/ps'
-import { bus } from './internals.ts'
+import { bus } from './internals.js'
 
 export {
   type TSpawnStore,

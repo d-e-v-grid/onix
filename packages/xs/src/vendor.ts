@@ -12,5 +12,5 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-export * from './vendor-core.ts'
-export * from './vendor-extra.ts'
+export * from './vendor-core.js'
+export * from './vendor-extra.js'

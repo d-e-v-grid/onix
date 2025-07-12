@@ -17,9 +17,9 @@ import path from 'node:path'
 import fs, { type Mode } from 'node:fs'
 import { type Buffer } from 'node:buffer'
 import process from 'node:process'
-import { type TSpawnStoreChunks } from './vendor-core.ts'
+import { type TSpawnStoreChunks } from './vendor-core.js'
 
-export { isStringLiteral } from './vendor-core.ts'
+export { isStringLiteral } from './vendor-core.js'
 
 export function tempdir(
   prefix: string = `zx-${randomId()}`,
@@ -46,7 +46,7 @@ export function tempfile(
   return filepath
 }
 
-export function noop() {}
+export function noop() { }
 
 export function identity<T>(v: T): T {
   return v
@@ -67,7 +67,7 @@ export const bufToString = (buf: Buffer | string): string =>
 export const bufArrJoin = (arr: TSpawnStoreChunks) =>
   arr.reduce((acc, buf) => acc + bufToString(buf), '')
 
-export const getLast = <T>(arr: { length: number; [i: number]: any }): T =>
+export const getLast = <T>(arr: { length: number;[i: number]: any }): T =>
   arr[arr.length - 1]
 
 export function preferLocalBin(
@@ -77,8 +77,8 @@ export function preferLocalBin(
   const pathKey =
     process.platform === 'win32'
       ? Object.keys(env)
-          .reverse()
-          .find((key) => key.toUpperCase() === 'PATH') || 'Path'
+        .reverse()
+        .find((key) => key.toUpperCase() === 'PATH') || 'Path'
       : 'PATH'
   const pathValue = dirs
     .map(

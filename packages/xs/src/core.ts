@@ -34,7 +34,7 @@ import {
   formatExitMessage,
   getCallerLocation,
   getExitCodeInfo,
-} from './error.ts'
+} from './error.js'
 import {
   exec,
   buildCmd,
@@ -44,7 +44,7 @@ import {
   VoidStream,
   type TSpawnStore,
   type TSpawnResult,
-} from './vendor-core.ts'
+} from './vendor-core.js'
 import {
   type Duration,
   isString,
@@ -62,14 +62,14 @@ import {
   toCamelCase,
   randomId,
   bufArrJoin,
-} from './util.ts'
-import { log } from './log.ts'
+} from './util.js'
+import { log } from './log.js'
 
 export { default as path } from 'node:path'
 export * as os from 'node:os'
-export { log, type LogEntry } from './log.ts'
-export { chalk, which, ps } from './vendor-core.ts'
-export { quote, quotePowerShell } from './util.ts'
+export { log, type LogEntry } from './log.js'
+export { chalk, which, ps } from './vendor-core.js'
+export { quote, quotePowerShell } from './util.js'
 
 const CWD = Symbol('processCwd')
 const SYNC = Symbol('syncExec')
@@ -102,55 +102,55 @@ export function within<R>(callback: () => R): R {
 }
 // prettier-ignore
 export interface Options {
-  [CWD]:          string
-  [SYNC]:         boolean
-  cwd?:           string
-  ac?:            AbortController
-  signal?:        AbortSignal
-  input?:         string | Buffer | Readable | ProcessOutput | ProcessPromise
-  timeout?:       Duration
+  [CWD]: string
+  [SYNC]: boolean
+  cwd?: string
+  ac?: AbortController
+  signal?: AbortSignal
+  input?: string | Buffer | Readable | ProcessOutput | ProcessPromise
+  timeout?: Duration
   timeoutSignal?: NodeJS.Signals
-  stdio:          StdioOptions
-  verbose:        boolean
-  sync:           boolean
-  env:            NodeJS.ProcessEnv
-  shell:          string | true
-  nothrow:        boolean
-  prefix?:        string
-  postfix?:       string
-  quote?:         typeof quote
-  quiet:          boolean
-  detached:       boolean
-  preferLocal:    boolean | string | string[]
-  spawn:          typeof spawn
-  spawnSync:      typeof spawnSync
-  store?:         TSpawnStore
-  log:            typeof log
-  kill:           typeof kill
-  killSignal?:    NodeJS.Signals
-  halt?:          boolean
-  delimiter?:     string | RegExp
+  stdio: StdioOptions
+  verbose: boolean
+  sync: boolean
+  env: NodeJS.ProcessEnv
+  shell: string | true
+  nothrow: boolean
+  prefix?: string
+  postfix?: string
+  quote?: typeof quote
+  quiet: boolean
+  detached: boolean
+  preferLocal: boolean | string | string[]
+  spawn: typeof spawn
+  spawnSync: typeof spawnSync
+  store?: TSpawnStore
+  log: typeof log
+  kill: typeof kill
+  killSignal?: NodeJS.Signals
+  halt?: boolean
+  delimiter?: string | RegExp
 }
 
 // prettier-ignore
 export const defaults: Options = resolveDefaults({
-  [CWD]:          process.cwd(),
-  [SYNC]:         false,
-  verbose:        false,
-  env:            process.env,
-  sync:           false,
-  shell:          true,
-  stdio:          'pipe',
-  nothrow:        false,
-  quiet:          false,
-  detached:       false,
-  preferLocal:    false,
+  [CWD]: process.cwd(),
+  [SYNC]: false,
+  verbose: false,
+  env: process.env,
+  sync: false,
+  shell: true,
+  stdio: 'pipe',
+  nothrow: false,
+  quiet: false,
+  detached: false,
+  preferLocal: false,
   spawn,
   spawnSync,
   log,
   kill,
-  killSignal:     SIGTERM,
-  timeoutSignal:  SIGTERM,
+  killSignal: SIGTERM,
+  timeoutSignal: SIGTERM,
 })
 
 // prettier-ignore
@@ -295,27 +295,27 @@ export class ProcessPromise extends Promise<ProcessOutput> {
     this._zurk = exec({
       sync,
       id,
-      cmd:      self.fullCmd,
-      cwd:      $.cwd ?? $[CWD],
-      input:    ($.input as ProcessPromise | ProcessOutput)?.stdout ?? $.input,
-      ac:       $.ac,
-      signal:   $.signal,
-      shell:    isString($.shell) ? $.shell : true,
-      env:      $.env,
-      spawn:    $.spawn,
-      spawnSync:$.spawnSync,
-      store:    $.store,
-      stdin:    self._stdin,
-      stdio:    self._stdio ?? $.stdio,
+      cmd: self.fullCmd,
+      cwd: $.cwd ?? $[CWD],
+      input: ($.input as ProcessPromise | ProcessOutput)?.stdout ?? $.input,
+      ac: $.ac,
+      signal: $.signal,
+      shell: isString($.shell) ? $.shell : true,
+      env: $.env,
+      spawn: $.spawn,
+      spawnSync: $.spawnSync,
+      store: $.store,
+      stdin: self._stdin,
+      stdio: self._stdio ?? $.stdio,
       detached: $.detached,
-      ee:       self._ee,
-      run(cb, ctx){
+      ee: self._ee,
+      run(cb, ctx) {
         (self.cmd as unknown as Promise<string>).then?.(_cmd => {
           self._command = _cmd
           ctx.cmd = self.fullCmd
           cb()
         }, error => {
-          ctx.on.end!({error, status: null, signal: null, duration: 0, ctx} as TSpawnResult, ctx)
+          ctx.on.end!({ error, status: null, signal: null, duration: 0, ctx } as TSpawnResult, ctx)
         }) || cb()
       },
       on: {
@@ -333,7 +333,7 @@ export class ProcessPromise extends Promise<ProcessOutput> {
           $.log({ kind: 'stderr', data, verbose: !self.isQuiet(), id })
         },
         end: (data, c) => {
-          const { error, status, signal, duration, ctx: {store} } = data
+          const { error, status, signal, duration, ctx: { store } } = data
           const { stdout, stderr } = store
           const output = self._output = new ProcessOutput({
             code: status,
@@ -370,14 +370,16 @@ export class ProcessPromise extends Promise<ProcessOutput> {
   }
   // prettier-ignore
   static {
-    Object.defineProperty(this.prototype, 'pipe', { get() {
-      const self = this
-      const getPipeMethod = (kind: keyof TSpawnStore): PipeMethod => function (dest: PipeDest, ...args: any[]) { return self._pipe.call(self, kind, dest, ...args) }
-      const stdout = getPipeMethod('stdout')
-      const stderr = getPipeMethod('stderr')
-      const stdall = getPipeMethod('stdall')
-      return Object.assign(stdout, { stderr, stdout, stdall })
-    }})
+    Object.defineProperty(this.prototype, 'pipe', {
+      get() {
+        const self = this
+        const getPipeMethod = (kind: keyof TSpawnStore): PipeMethod => function (dest: PipeDest, ...args: any[]) { return self._pipe.call(self, kind, dest, ...args) }
+        const stdout = getPipeMethod('stdout')
+        const stderr = getPipeMethod('stderr')
+        const stdall = getPipeMethod('stdall')
+        return Object.assign(stdout, { stderr, stdout, stdall })
+      }
+    })
   }
   private _pipe(
     source: keyof TSpawnStore,
@@ -689,9 +691,11 @@ export class ProcessPromise extends Promise<ProcessOutput> {
     Object.getOwnPropertyNames(ProcessPromise.prototype).forEach(k => {
       if (k in Promise.prototype) return
       if (!toggle) { Reflect.deleteProperty(p, k); return }
-      Object.defineProperty(p, k, { configurable: true, get() {
-        throw new Error('Inappropriate usage. Apply $ instead of direct instantiation.')
-      }})
+      Object.defineProperty(p, k, {
+        configurable: true, get() {
+          throw new Error('Inappropriate usage. Apply $ instead of direct instantiation.')
+        }
+      })
     })
   }
 }
@@ -747,7 +751,8 @@ export class ProcessOutput extends Error {
       stdout: { get: once(() => bufArrJoin(dto.store.stdout)) },
       stderr: { get: once(() => bufArrJoin(dto.store.stderr)) },
       stdall: { get: once(() => bufArrJoin(dto.store.stdall)) },
-      message: { get: once(() =>
+      message: {
+        get: once(() =>
           message || dto.error
             ? ProcessOutput.getErrorMessage(dto.error || new Error(message), dto.from)
             : ProcessOutput.getExitMessage(
@@ -840,9 +845,8 @@ export class ProcessOutput extends Error {
   stdout: ${chalk.green(inspect(this.stdout))},
   stderr: ${chalk.red(inspect(this.stderr))},
   signal: ${inspect(this.signal)},
-  exitCode: ${(this.ok ? chalk.green : chalk.red)(this.exitCode)}${
-    codeInfo ? chalk.grey(' (' + codeInfo + ')') : ''
-  },
+  exitCode: ${(this.ok ? chalk.green : chalk.red)(this.exitCode)}${codeInfo ? chalk.grey(' (' + codeInfo + ')') : ''
+      },
   duration: ${this.duration}
 }`
   }
@@ -883,7 +887,7 @@ try {
   if (isString(shell)) $.shell = shell
   if (isString(prefix)) $.prefix = prefix
   if (isString(postfix)) $.postfix = postfix
-} catch (err) {}
+} catch (err) { }
 
 function checkShell() {
   if (!$.shell)
@@ -932,14 +936,14 @@ export async function kill(pid: number, signal = $.killSignal) {
   for (const p of children) {
     try {
       process.kill(+p.pid, signal)
-    } catch (e) {}
+    } catch (e) { }
   }
   try {
     process.kill(-pid, signal)
   } catch (e) {
     try {
       process.kill(+pid, signal)
-    } catch (e) {}
+    } catch (e) { }
   }
 }
 

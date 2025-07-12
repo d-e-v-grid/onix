@@ -33,7 +33,7 @@ import { depseekSync as _depseek } from 'depseek'
 import { default as _minimist } from 'minimist'
 import { default as _dotenv } from 'envapi'
 
-import { bus } from './internals.ts'
+import { bus } from './internals.js'
 
 const { wrap } = bus
 
@@ -131,6 +131,6 @@ export const nodeFetch: typeof _nodeFetch = wrap('nodeFetch', _nodeFetch)
 
 export const minimist: typeof _minimist = wrap('minimist', _minimist)
 export namespace minimist {
-  export interface Opts extends _minimist.Opts {}
-  export interface ParsedArgs extends _minimist.ParsedArgs {}
+  export interface Opts extends _minimist.Opts { }
+  export interface ParsedArgs extends _minimist.ParsedArgs { }
 }

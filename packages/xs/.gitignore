@@ -1,36 +1,18 @@
-# Dependencies
 node_modules/
-
-# Build output
-dist/
-*.tsbuildinfo
-
-# Test artifacts
-test/temp/
 coverage/
-*.lcov
+package/
+reports/
+docs/.vitepress/cache/
+yarn.lock
+pnpm-lock.yaml
+temp
+test/fixtures/ts-project/build/
+jsr.json
+.npmrc
 
-# IDE
-.vscode/
-.idea/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# Environment
-.env
-.env.local
-.env.*.local
-
-# Temporary files
-*.tmp
-*.temp
-tmp/
-temp/
+build/*.js
+!build/cli.js
+!build/core.js
+!build/index.js
+!build/globals.js
+!build/deno.js

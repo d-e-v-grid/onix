@@ -29,12 +29,12 @@ import {
   path,
   stdin,
   VERSION,
-} from './index.ts'
-import { installDeps, parseDeps } from './deps.ts'
-import { startRepl } from './repl.ts'
-import { randomId } from './util.ts'
-import { transformMarkdown } from './md.ts'
-import { createRequire, type minimist } from './vendor.ts'
+} from './index.js'
+import { installDeps, parseDeps } from './deps.js'
+import { startRepl } from './repl.js'
+import { randomId } from './util.js'
+import { transformMarkdown } from './md.js'
+import { createRequire, type minimist } from './vendor.js'
 
 const EXT = '.mjs'
 const EXT_RE = /^\.[mc]?[jt]sx?$/
