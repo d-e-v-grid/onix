@@ -40,17 +40,19 @@ export const parseArgv = (
   args: string[] = process.argv.slice(2),
   opts: ArgvOpts = {},
   defs: Record<string, any> = {}
-): minimist.ParsedArgs =>
-  Object.entries<string>(minimist(args, opts)).reduce<minimist.ParsedArgs>(
+): minimist.ParsedArgs => {
+  const parsed = minimist(args, opts)
+  return Object.entries(parsed).reduce<minimist.ParsedArgs>(
     (m, [k, v]) => {
       const kTrans = opts.camelCase ? toCamelCase : identity
       const vTrans = opts.parseBoolean ? parseBool : identity
-      const [_k, _v] = k === '--' || k === '_' ? [k, v] : [kTrans(k), vTrans(v)]
+      const [_k, _v] = k === '--' || k === '_' ? [k, v] : [kTrans(k as string), Array.isArray(v) ? v : vTrans(v as string)]
       m[_k] = _v
       return m
     },
     defs as minimist.ParsedArgs
   )
+}
 
 export function updateArgv(args?: string[], opts?: ArgvOpts) {
   for (const k in argv) delete argv[k]
@@ -248,4 +250,34 @@ export async function spinner<T>(
       stream.write(' '.repeat((process.stdout.columns || 1) - 1) + '\r')
     }
   })
+}
+
+// Additional functions for compatibility with zx globals
+
+/**
+ * @deprecated Will be removed in v9
+ */
+export function syncProcessCwd(cwd: string = $.cwd || process.cwd()): void {
+  process.chdir(cwd)
+}
+
+/**
+ * @deprecated Use $.shell = 'powershell.exe' instead
+ */
+export function usePowerShell(): void {
+  $.shell = 'powershell.exe'
+}
+
+/**
+ * @deprecated Use $.shell = 'pwsh' instead
+ */
+export function usePwsh(): void {
+  $.shell = 'pwsh'
+}
+
+/**
+ * @deprecated Use $.shell = 'bash' instead
+ */
+export function useBash(): void {
+  $.shell = 'bash'
 }

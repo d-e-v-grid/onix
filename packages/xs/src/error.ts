@@ -176,8 +176,12 @@ export function getErrnoMessage(errno?: number): string {
   )
 }
 
-export const getExitCodeInfo = (exitCode: number | null): string | undefined =>
-  EXIT_CODES[exitCode as keyof typeof EXIT_CODES]
+export const getExitCodeInfo = (exitCode: number | null): string => {
+  if (exitCode === null) return 'Unknown exit code'
+  if (exitCode === 0) return 'Success'
+  if (exitCode === 1) return 'General error'
+  return EXIT_CODES[exitCode as keyof typeof EXIT_CODES] || `Exit code ${exitCode}`
+}
 
 export const formatExitMessage = (
   code: number | null,

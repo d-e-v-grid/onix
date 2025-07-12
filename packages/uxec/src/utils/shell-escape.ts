@@ -43,6 +43,10 @@ function escapeWindowsArg(arg: string): string {
 }
 
 export function interpolate(strings: TemplateStringsArray, ...values: any[]): string {
+  return interpolateWithQuote(strings, undefined, ...values);
+}
+
+export function interpolateWithQuote(strings: TemplateStringsArray, quoteFn?: typeof quote | undefined, ...values: any[]): string {
   let result = '';
   
   for (let i = 0; i < strings.length; i++) {
@@ -52,14 +56,42 @@ export function interpolate(strings: TemplateStringsArray, ...values: any[]): st
       const value = values[i];
       
       if (Array.isArray(value)) {
-        // Join array elements with space and escape each
-        result += value.map(v => escapeArg(String(v))).join(' ');
-      } else if (value != null) {
-        // Escape single value
-        result += escapeArg(String(value));
+        // Join array elements with space
+        // If quoteFn is provided, use it for quoting, otherwise use escapeArg
+        result += value.map(v => {
+          const str = String(v);
+          return quoteFn ? quoteFn(str) : escapeArg(str);
+        }).join(' ');
+      } else if (value !== undefined) {
+        // Convert value to string (including null)
+        const str = String(value);
+        result += quoteFn ? quoteFn(str) : escapeArg(str);
+      } else {
+        // For undefined, zx converts it to string "undefined"
+        result += quoteFn ? quoteFn('undefined') : escapeArg('undefined');
       }
     }
   }
   
   return result;
+}
+
+// xs/zx compatible quote function
+export function quote(arg: string): string {
+  if (arg === '') return `$''`;
+  if (/^[\w/.\-@:=]+$/.test(arg)) return arg;
+
+  return (
+    `$'` +
+    arg
+      .replace(/\\/g, '\\\\')
+      .replace(/'/g, "\\'")
+      .replace(/\f/g, '\\f')
+      .replace(/\n/g, '\\n')
+      .replace(/\r/g, '\\r')
+      .replace(/\t/g, '\\t')
+      .replace(/\v/g, '\\v')
+      .replace(/\0/g, '\\0') +
+    `'`
+  );
 }

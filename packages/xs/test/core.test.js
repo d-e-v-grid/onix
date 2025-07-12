@@ -38,15 +38,11 @@ import {
   $,
   cd,
   within,
-  usePwsh,
-  useBash,
   defaults,
   ProcessOutput,
-  usePowerShell,
-  ProcessPromise,
-  syncProcessCwd,
   resolveDefaults,
 } from '../build/core.js'
+import { ProcessPromise, syncProcessCwd, usePwsh, useBash, usePowerShell } from '../build/index.js'
 
 describe('core', () => {
   describe('resolveDefaults()', () => {

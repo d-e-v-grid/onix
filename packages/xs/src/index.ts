@@ -13,11 +13,20 @@
 // limitations under the License.
 
 import { fs } from './vendor.js'
-import { ProcessPromise } from './core.js'
+import { type ProcessPromise as ProcessPromiseType } from './core.js'
 
 export * from './core.js'
 export * from './goods.js'
 export { fs, YAML, glob, dotenv, minimist, glob as globby } from './vendor.js'
+
+// For globals compatibility - ProcessPromise needs to be a constructor
+export const ProcessPromise = class ProcessPromise {
+  static [Symbol.hasInstance](obj: any): boolean {
+    // Make instanceof work with xs ProcessPromise type
+    return obj && typeof obj.then === 'function' && 
+           'stdin' in obj && 'stdout' in obj && 'stderr' in obj;
+  }
+} as any
 
 export const VERSION: string =
   fs.readJsonSync(new URL('../package.json', import.meta.url), {
@@ -39,13 +48,13 @@ export {
 /**
  *  @deprecated Use $`cmd`.nothrow() instead.
  */
-export function nothrow(promise: ProcessPromise): ProcessPromise {
+export function nothrow(promise: ProcessPromiseType): ProcessPromiseType {
   return promise.nothrow()
 }
 
 /**
  * @deprecated Use $`cmd`.quiet() instead.
  */
-export function quiet(promise: ProcessPromise): ProcessPromise {
+export function quiet(promise: ProcessPromiseType): ProcessPromiseType {
   return promise.quiet()
 }

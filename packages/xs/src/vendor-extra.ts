@@ -93,6 +93,14 @@ export interface YAML {
   /** @deprecated */
   isSeq(v: any): boolean
   /** @deprecated */
+  visit?(v: any, fn: any): void
+  /** @deprecated */
+  visitAsync?(v: any, fn: any): Promise<void>
+  /** @deprecated */
+  CST?: any
+  /** @deprecated */
+  default?: any
+  /** @deprecated */
   Alias: any
   /** @deprecated */
   Composer: any

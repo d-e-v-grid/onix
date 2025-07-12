@@ -13,11 +13,12 @@
 // limitations under the License.
 
 import * as _ from './index.js'
+import type { ProcessPromise as ProcessPromiseType } from './core.js'
 
 Object.assign(globalThis, _)
 // TODO: global types not working with jsr.io
 declare global {
-  type ProcessPromise = _.ProcessPromise
+  type ProcessPromise = ProcessPromiseType
   type ProcessOutput = _.ProcessOutput
   var ProcessPromise: typeof _.ProcessPromise
   var ProcessOutput: typeof _.ProcessOutput

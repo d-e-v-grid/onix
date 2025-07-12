@@ -15,7 +15,7 @@
 import assert from 'node:assert'
 import { test, describe } from 'node:test'
 
-import { transformMarkdown } from '../src/md.ts'
+import { transformMarkdown } from '../build/md.js'
 
 describe('md', () => {
   test('transformMarkdown()', () => {

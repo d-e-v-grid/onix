@@ -150,5 +150,18 @@ export interface ExecFunction {
 
 // Re-export adapter configs
 export type { LocalAdapterConfig } from './adapters/local-adapter.js';
-
 export type { DockerAdapterConfig } from './adapters/docker-adapter.js';
+
+// Export adapters for direct usage
+export { BaseAdapter } from './adapters/base-adapter.js';
+export { LocalAdapter } from './adapters/local-adapter.js';
+export { SSHAdapter } from './adapters/ssh-adapter.js';
+export { DockerAdapter } from './adapters/docker-adapter.js';
+
+// Export xs compatibility layer
+export { 
+  createXsCompatibleShell as createXsShell, 
+  type XsOptions,
+  type XsProcessPromise
+} from './xs-compat/xs-shell.js';
+export { ProcessOutput, type ProcessOutputOptions } from './core/process-output.js';

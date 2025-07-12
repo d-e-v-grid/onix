@@ -25,6 +25,16 @@ export type RequestInit = Parameters<typeof globalThis.fetch>[1] & {
   signal?: AbortSignal
 }
 
+import {
+  exec,
+  buildCmd,
+  VoidStream,
+  isStringLiteral,
+  type TSpawnStore,
+  type TSpawnResult,
+  type TSpawnStoreChunks,
+} from 'zurk'
+
 export {
   exec,
   buildCmd,
@@ -33,7 +43,7 @@ export {
   type TSpawnStore,
   type TSpawnResult,
   type TSpawnStoreChunks,
-} from 'zurk/spawn'
+}
 export const chalk: typeof _chalk = bus.wrap('chalk', _chalk)
 export const which: typeof _which = bus.wrap('which', _which)
 export const ps: typeof _ps = bus.wrap('ps', _ps)

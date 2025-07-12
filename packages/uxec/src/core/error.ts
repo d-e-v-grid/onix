@@ -77,9 +77,24 @@ export class AdapterError extends ExecutionError {
     public readonly operation: string,
     public readonly originalError?: Error
   ) {
-    const message = originalError 
-      ? `Adapter '${adapter}' failed during '${operation}': ${originalError.message}`
-      : `Adapter '${adapter}' failed during '${operation}'`;
+    let message: string;
+    
+    if (originalError) {
+      // Handle specific error cases for better error messages
+      const err = originalError as any;
+      if (err.code === 'ENOENT' && err.syscall === 'spawn') {
+        // Check if it's a cwd-related error
+        if (err.message.includes('No such file or directory')) {
+          message = err.message;
+        } else {
+          message = `spawn ENOENT: No such file or directory`;
+        }
+      } else {
+        message = `Adapter '${adapter}' failed during '${operation}': ${originalError.message}`;
+      }
+    } else {
+      message = `Adapter '${adapter}' failed during '${operation}'`;
+    }
     
     super(message, 'ADAPTER_ERROR', {
       adapter,

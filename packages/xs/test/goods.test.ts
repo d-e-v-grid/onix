@@ -17,7 +17,7 @@ import process from 'node:process'
 import { Duplex , Writable } from 'node:stream'
 import { test, after, describe } from 'node:test'
 
-import { $, fs, path, chalk, dotenv, tempfile } from '../src/index.ts'
+import { $, fs, path, chalk, dotenv, tempfile } from '../build/index.js'
 import {
   echo,
   argv,
@@ -30,7 +30,7 @@ import {
   parseArgv,
   updateArgv,
   expBackoff,
-} from '../src/goods.ts'
+} from '../build/goods.js'
 
 const __dirname = new URL('.', import.meta.url).pathname
 const root = path.resolve(__dirname, '..')

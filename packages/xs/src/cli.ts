@@ -16,6 +16,7 @@
 
 import url from 'node:url'
 import process from 'node:process'
+import * as nodeFs from 'node:fs/promises'
 
 import { randomId } from './util.js'
 import { startRepl } from './repl.js'
@@ -42,7 +43,7 @@ const EXT_RE = /^\.[mc]?[jt]sx?$/
 
 // prettier-ignore
 export const argv: minimist.ParsedArgs = parseArgv(process.argv.slice(2), {
-  default: resolveDefaults({ ['prefer-local']: false } as any, 'ZX_', process.env, new Set(['env', 'install', 'registry'])),
+  default: resolveDefaults({ preferLocal: false } as any),
   // exclude 'prefer-local' to let minimist infer the type
   string: ['shell', 'prefix', 'postfix', 'eval', 'cwd', 'ext', 'registry', 'env'],
   boolean: ['version', 'help', 'quiet', 'verbose', 'install', 'repl', 'experimental'],
@@ -103,10 +104,13 @@ export async function main(): Promise<void> {
     return
   }
   if (argv.cwd) $.cwd = argv.cwd
-  if (argv.env) {
+  if (argv.env && typeof argv.env === 'string' && argv.env.trim() !== '') {
     const envfile = path.resolve($.cwd ?? process.cwd(), argv.env)
-    dotenv.config(envfile)
-    resolveDefaults()
+    const parsed = dotenv.config(envfile)
+    if (parsed) {
+      // Update env directly
+      Object.assign($.env, parsed)
+    }
   }
   if (argv.verbose) $.verbose = true
   if (argv.quiet) $.quiet = true
@@ -139,7 +143,7 @@ async function runScript(
   try {
     if (tempPath) {
       scriptPath = tempPath
-      await fs.writeFile(tempPath, script)
+      await nodeFs.writeFile(tempPath, script)
     }
     const cwd = path.dirname(scriptPath)
     if (typeof argv.preferLocal === 'string') {
@@ -197,7 +201,7 @@ async function readScript() {
     script = await readScriptFromHttp(firstArg)
     tempPath = getFilepath($.cwd, name, ext)
   } else {
-    script = await fs.readFile(firstArg, 'utf8')
+    script = await nodeFs.readFile(firstArg, 'utf8')
     scriptPath = firstArg.startsWith('file:')
       ? url.fileURLToPath(firstArg)
       : path.resolve(firstArg)

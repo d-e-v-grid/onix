@@ -67,9 +67,7 @@ const _bundle = bundle && bundle !== 'none'
 const _external = ['zx/globals', ...(_bundle ? external.split(',') : [])] // https://github.com/evanw/esbuild/issues/1466
 
 const plugins = [
-  esbuildResolvePlugin({
-    yaml: path.resolve(__dirname, '../node_modules/yaml/browser'),
-  }),
+  // Removed yaml browser resolution - let esbuild resolve yaml naturally for node platform
 ]
 
 const thirdPartyModules = new Set()

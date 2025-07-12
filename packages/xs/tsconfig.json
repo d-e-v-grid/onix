@@ -8,8 +8,6 @@
     "strict": true,
     "outDir": "./build",
     "declaration": true,
-    "emitDeclarationOnly": true,
-    "allowImportingTsExtensions": true,
     "types": ["node", "fs-extra"]
   },
   "include": ["./src/**/*"],

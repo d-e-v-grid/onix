@@ -23,7 +23,7 @@ import {
   formatErrorMessage,
   formatErrorDetails,
   getCallerLocationFromString,
-} from '../src/error.ts'
+} from '../build/error.js'
 
 describe('error', () => {
   test('getExitCodeInfo()', () => {

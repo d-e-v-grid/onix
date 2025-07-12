@@ -166,7 +166,20 @@ export class LocalAdapter extends BaseAdapter {
 
     // Wait for process completion
     const processPromise = new Promise<ProcessResult>((resolve, reject) => {
-      child.on('error', reject);
+      child.on('error', (err: any) => {
+        // Enhance error message for common cases
+        if (err.code === 'ENOENT') {
+          if (err.syscall === 'spawn /bin/sh' || err.syscall === 'spawn') {
+            // Check if it's likely a cwd issue
+            if (command.cwd) {
+              err.message = `spawn ${err.path || '/bin/sh'} ENOENT: No such file or directory (cwd: ${command.cwd})`;
+            } else {
+              err.message = `spawn ${err.path || '/bin/sh'} ENOENT: No such file or directory`;
+            }
+          }
+        }
+        reject(err);
+      });
       
       child.on('exit', (code, signal) => {
         resolve({
@@ -258,10 +271,19 @@ export class LocalAdapter extends BaseAdapter {
     const options: any = {
       cwd: command.cwd,
       env: this.createCombinedEnv(this.config.defaultEnv, command.env),
-      shell: command.shell,
       detached: command.detached,
       windowsHide: true
     };
+
+    // Check if cwd exists if provided
+    if (command.cwd) {
+      try {
+        require('fs').accessSync(command.cwd, require('fs').constants.F_OK);
+      } catch (err) {
+        // This will be caught by spawn and result in an ENOENT error
+        // Keep cwd as is - spawn will handle the error appropriately
+      }
+    }
 
     if (this.localConfig.uid !== undefined) {
       options.uid = this.localConfig.uid;
@@ -271,17 +293,43 @@ export class LocalAdapter extends BaseAdapter {
       options.gid = this.localConfig.gid;
     }
 
+    // Handle shell option properly
+    if (command.shell === true) {
+      if (platform() === 'win32') {
+        options.shell = 'cmd.exe';
+      } else {
+        // For Unix systems, try to find available shell
+        const availableShells = ['/bin/bash', '/bin/sh', '/usr/bin/bash', '/usr/bin/sh'];
+        let shellFound = false;
+        
+        for (const shell of availableShells) {
+          try {
+            require('fs').accessSync(shell, require('fs').constants.F_OK);
+            options.shell = shell;
+            shellFound = true;
+            break;
+          } catch {
+            // Shell not found, try next
+          }
+        }
+        
+        if (!shellFound) {
+          // Fallback to just true and let Node.js decide
+          options.shell = true;
+        }
+      }
+    } else if (typeof command.shell === 'string') {
+      options.shell = command.shell;
+    } else {
+      options.shell = command.shell;
+    }
+
     // Handle stdio
     options.stdio = [
       command.stdin ? 'pipe' : 'ignore',
       command.stdout || 'pipe',
       command.stderr || 'pipe'
     ];
-
-    // Windows-specific options
-    if (platform() === 'win32' && command.shell === true) {
-      options.shell = 'cmd.exe';
-    }
 
     return options;
   }

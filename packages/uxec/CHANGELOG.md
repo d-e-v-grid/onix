@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **xs Compatibility**: Full compatibility layer for xs/zx shell library
+  - ProcessOutput class matching xs/zx interface with all expected methods
+  - createXsShell (createXsCompatibleShell) function for drop-in replacement
+  - Support for all xs/zx features: sync/async execution, piping, streaming
+  - Template literal syntax with proper interpolation
+  - Error handling with exit codes and signals
+  - JSON, text, lines, buffer, and blob output methods
+  - Iterator and async iterator support
+  - Shell configuration and environment variables
+  - SSH and Docker adapter support through xs interface
+- **Core**: ProcessOutput class implementation
+  - Full compatibility with zx ProcessOutput API
+  - Support for stdout, stderr, stdall, exitCode, signal properties
+  - toString(), valueOf(), json(), text(), lines(), buffer(), blob() methods
+  - Iterator support for line-by-line processing
+  - Human-readable error messages for common exit codes
+
+### Changed
+- **Architecture**: Added dedicated xs-compat module for better separation
+- **xs Integration**: Complete rewrite of uxec-adapter.ts in xs package
+  - Simplified integration using new xs-compat layer
+  - Direct mapping between xs Options and uxec XsOptions
+  - Clean API without complex stream management
+
+### Fixed
+- **Type Safety**: Resolved all TypeScript compilation errors
+- **Stream Handling**: Proper buffer management for stdout/stderr/stdall
+- **Error Handling**: Consistent ProcessOutput error objects across all adapters
+
 ## [0.1.1] - 2025-07-12
 
 ### Fixed

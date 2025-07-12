@@ -66,9 +66,8 @@ const nameRe = /^(?<name>(@[a-z\d-~][\w-.~]*\/)?[a-z\d-~][\w-.~]*)\/?.*$/i
 const versionRe = /^@(?<version>[~^]?(v?[\dx*]+([-.][\d*a-z-]+)*))/i
 
 export function parseDeps(content: string): Record<string, string> {
-  return depseek(content + '\n', { comments: true }).reduce<
-    Record<string, string>
-  >((m, { type, value }, i, list) => {
+  return depseek(content + '\n', { comments: true }).reduce(
+    (m: Record<string, string>, { type, value }: any, i: number, list: any[]) => {
     if (type === 'dep') {
       const meta = list[i + 1]
       const name = parsePackageName(value)

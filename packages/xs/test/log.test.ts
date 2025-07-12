@@ -15,7 +15,7 @@
 import assert from 'node:assert'
 import { test, after, before, describe, beforeEach } from 'node:test'
 
-import { log, formatCmd } from '../src/log.ts'
+import { log, formatCmd } from '../build/log.js'
 
 describe('log', () => {
   describe('log()', () => {
